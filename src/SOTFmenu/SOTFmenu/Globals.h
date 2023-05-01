@@ -12,6 +12,8 @@ namespace Globals
     inline Unity::CGameObject* LocalPlayer;
     inline Unity::CComponent* Vitals;
     inline Unity::CComponent* FirstPersonCharacter;
+
+    inline DWORD Cheats_CheatsBridge_o{};
     
     namespace Stats
     {
@@ -24,8 +26,6 @@ namespace Globals
 
     namespace ToggleStats
     {
-        inline bool toggleHealth = true;
-        inline bool toggleStamina = true;
         inline bool toggleFullness = true;
         inline bool toggleHydration = true;
         inline bool toggleRest = true;
@@ -37,8 +37,6 @@ namespace Globals
     {
         inline Present oPresent;
 
-        inline bool isGodMode = false;
-        inline bool isStamina = false;
         inline bool isFullness = false;
         inline bool isHydration = false;
         inline bool isRest = false;
@@ -54,9 +52,12 @@ namespace Globals
         inline bool RainbowThread = true;
         inline float RainbowDelay{ 0.5f };
 
+        inline bool showMap = false;
+
         inline int OpenKey{ 0x50 };
         inline bool ShowTerminal = true;
     }
 
+    inline bool initSingleHooks = false;
     inline bool il2cppStatus = false;
 }

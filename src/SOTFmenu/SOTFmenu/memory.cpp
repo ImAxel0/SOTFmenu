@@ -22,7 +22,7 @@ void findInMemory()
 			Globals::Gui::dot = 1;
 			break;
 	}
-
+	
 	// GameAssembly.dll
 	Globals::GameAssembly = (uintptr_t)GetModuleHandle("GameAssembly.dll");
 
@@ -35,9 +35,10 @@ void findInMemory()
 
 	SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
 	std::cout << "[+] Found GameAssembly at: " << std::hex << Globals::GameAssembly << '\n';
-
+	
+	// Local Player
 	Globals::LocalPlayer = Unity::GameObject::Find("LocalPlayer");
-
+	
 	if (!Globals::LocalPlayer)
 	{
 		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
@@ -79,32 +80,6 @@ void findInMemory()
 
 	SetConsoleTextAttribute(Globals::Gui::hConsole, 15);
 	printf("Searching Values...\n");
-
-	// Health
-	Globals::Stats::Health = Globals::Vitals->GetPropertyValue<Unity::CObject*>("Health");
-	
-	if (!Globals::Stats::Health)
-	{
-		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
-		printf("[-] Cannot find Health value\n");
-	}
-	else {
-		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
-		std::cout << "[+] Found Health value: " << Globals::Stats::Health << '\n';
-	}
-
-	// Stamina
-	Globals::Stats::Stamina = Globals::Vitals->GetPropertyValue<Unity::CObject*>("Stamina");
-
-	if (!Globals::Stats::Stamina)
-	{
-		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
-		printf("[-] Cannot find Stamina value\n");
-	}
-	else {
-		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
-		std::cout << "[+] Found Stamina value: " << Globals::Stats::Stamina << '\n';
-	}
 	
 	// Fullness
 	Globals::Stats::Fullness = Globals::Vitals->GetPropertyValue<Unity::CObject*>("Fullness");
@@ -151,37 +126,6 @@ void findInMemory()
 
 void setMemory()
 {
-	//God Mode
-	if (Config::bHealth)
-	{
-		if (!Globals::Stats::Health) {
-			return;
-		}
-
-		Globals::Stats::Health->SetMemberValue<float>("_currentValue", Config::Value::health);
-		Globals::ToggleStats::toggleHealth = false;
-	}
-	else if (!Globals::ToggleStats::toggleHealth)
-	{
-		Globals::ToggleStats::toggleHealth = true;
-		Globals::Stats::Health->SetMemberValue<float>("_currentValue", 100.0f);
-	}
-	
-	// Stamina
-	if (Config::bStamina)
-	{
-		if (!Globals::Stats::Stamina) {
-			return;
-		}
-
-		Globals::Stats::Stamina->SetMemberValue<float>("_currentValue", Config::Value::stamina);
-		Globals::ToggleStats::toggleStamina = false;
-	}
-	else if (!Globals::ToggleStats::toggleStamina)
-	{
-		Globals::ToggleStats::toggleStamina = true;
-		Globals::Stats::Stamina->SetMemberValue<float>("_currentValue", 90.0f);
-	}
 	// Fullness
 	if (Config::bFullness)
 	{

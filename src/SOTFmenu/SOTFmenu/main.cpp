@@ -57,10 +57,11 @@ DWORD WINAPI MainThread(LPVOID lpReserved)
 				Sleep(500);
 				findInMemory();
 			}
+			CreateHacksHooks();
 			kiero::bind(8, (void**)&Globals::Gui::oPresent, hkPresent);
 
 			SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
-			printf("[+] Menu Loaded!\n");
+			printf("\n[+] Menu Loaded!\n");
 			InitCursorHook();
 
 			SetConsoleTextAttribute(Globals::Gui::hConsole, 14);

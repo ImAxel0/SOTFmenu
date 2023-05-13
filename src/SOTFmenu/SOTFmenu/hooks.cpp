@@ -106,7 +106,7 @@ void CreateHacksHooks()
 		printf("[+] AdjustStamina hook enabled\n");
 	} 
 	// Infinite Ammo
-	if (MH_CreateHook(reinterpret_cast<LPVOID*>(Globals::GameAssembly + 0x37215E0), &Sons_Weapon_RangedWeapon_Ammo__Remove_Hook, reinterpret_cast<LPVOID*>(&Sons_Weapon_RangedWeapon_Ammo__Remove_o)) != MH_OK) {
+	if (MH_CreateHook(reinterpret_cast<LPVOID*>(Globals::GameAssembly + Config::Offsets::RemoveAmmo), &Sons_Weapon_RangedWeapon_Ammo__Remove_Hook, reinterpret_cast<LPVOID*>(&Sons_Weapon_RangedWeapon_Ammo__Remove_o)) != MH_OK) {
 		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
 		printf("[-] Error creating Infinite Ammo hook\n");
 	}
@@ -114,7 +114,7 @@ void CreateHacksHooks()
 		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
 		printf("[+] Infinite Ammo hook created\n");
 	}
-	if (MH_EnableHook(reinterpret_cast<LPVOID*>(Globals::GameAssembly + 0x37215E0)) != MH_OK) {
+	if (MH_EnableHook(reinterpret_cast<LPVOID*>(Globals::GameAssembly + Config::Offsets::RemoveAmmo)) != MH_OK) {
 		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
 		printf("[-] Error enabling Infinite Ammo hook\n");
 	}

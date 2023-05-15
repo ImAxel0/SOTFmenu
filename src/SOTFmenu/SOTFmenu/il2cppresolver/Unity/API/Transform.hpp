@@ -16,6 +16,7 @@ namespace Unity
 		void* m_pSetRotation = nullptr;
 		void* m_pSetLocalPosition = nullptr;
 		void* m_pSetLocalScale = nullptr;
+		void* m_pFindChild = nullptr;
 	};
 	extern STransformFunctions TransformFunctions;
 
@@ -40,6 +41,20 @@ namespace Unity
 		int GetChildCount()
 		{
 			return reinterpret_cast<int(UNITY_CALLING_CONVENTION)(void*)>(TransformFunctions.m_pGetChildCount)(this);
+		}
+
+		CTransform* FindChild(const char* path, bool isActiveOnly)
+		{
+			return reinterpret_cast<CTransform * (UNITY_CALLING_CONVENTION)(void*, System_String*, bool)>(TransformFunctions.m_pFindChild)(this, IL2CPP::String::New(path), isActiveOnly);
+		}
+
+		// e.g CGameObject->GetTransform()->FindChild("child1/child2/child3");
+		CTransform* FindChild(const char* path)
+		{
+			if (path == NULL) {
+				return nullptr;
+			}
+			return FindChild(path, false);
 		}
 
 		Vector3 GetPosition()

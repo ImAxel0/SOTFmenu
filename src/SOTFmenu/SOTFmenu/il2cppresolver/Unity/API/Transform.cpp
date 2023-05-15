@@ -22,6 +22,7 @@ namespace Unity
 			TransformFunctions.m_pSetRotation			= IL2CPP::ResolveCall(UNITY_TRANSFORM_SETROTATION);
 			TransformFunctions.m_pSetLocalPosition		= IL2CPP::ResolveCall(UNITY_TRANSFORM_SETLOCALPOSITION);
 			TransformFunctions.m_pSetLocalScale			= IL2CPP::ResolveCall(UNITY_TRANSFORM_SETLOCALSCALE);
+			TransformFunctions.m_pFindChild				= IL2CPP::ResolveCall(UNITY_TRANSFORM_FINDCHILD);
 		}
 	}
 }

@@ -12,6 +12,11 @@ namespace Config
     inline bool bFallDamage = false;
     inline bool bGravity = false;
     inline bool bInfiniteAmmo = false;
+    inline bool bGlider = false;
+    inline bool bKnightV = false;
+    inline bool bPistol = false;
+    inline bool bFlashLight = false;
+    inline bool bLighter = false;
 
     inline bool bHealthSP = false;
     inline bool bStaminaSP = false;
@@ -24,6 +29,43 @@ namespace Config
         inline float runSpeed = 5.4f;
         inline float swimSpeedMultiplier = 4.0f;
         inline float jumpHeight = 2.6f;
+
+        namespace Glider
+        {
+            const inline float Def_constantForwardForce = 60.0f;
+            inline float _constantForwardForce = 60.0f;
+            inline bool noDownForce = false;
+        }
+
+        namespace KnightV
+        {
+            const inline float DefJumpForce = 4.0f;
+            const inline float DefMaxVelocity = 20.0f;
+            const inline float DefMinMaxLean = 8.0f;
+            inline float JumpForce = 4.0f;
+            inline float MaxVelocity = 20.0f;
+            inline float MinMaxLean = 8.0f;
+        }
+
+        namespace Pistol
+        {
+            inline bool IsPistolEquipped = false;
+            inline bool RapidFire = false;
+        }
+
+        namespace FlashLight
+        {
+            inline bool IsFlashLightEquipped = false;
+            inline float _maxLightIntensity = 16.5f;
+            inline bool NoDrain = false;
+        }
+
+        namespace Lighter
+        {
+            inline bool IsLighterEquipped = false;
+            inline float intensity = 512.0f;
+            inline bool IncRange = false;
+        }
     }
 
     namespace Offsets

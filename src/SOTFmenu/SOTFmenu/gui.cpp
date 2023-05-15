@@ -58,6 +58,7 @@ namespace Colors
 	ImColor dynamicText3(255, 255, 255);
 	ImColor dynamicText4(255, 255, 255);
 	ImColor dynamicAbout(255, 255, 255);
+	ImColor itemsText(255, 255, 255);
 	ImColor hoveredText(88, 127, 255);
 }
 
@@ -353,6 +354,11 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		Globals::Gui::showMenu = !Globals::Gui::showMenu;
 	}
 
+	// May cause performance issues
+	Config::Value::Pistol::IsPistolEquipped = findPistol();
+	Config::Value::FlashLight::IsFlashLightEquipped = findFlashLight();
+	Config::Value::Lighter::IsLighterEquipped = findLighter();
+
 	if (Globals::Gui::showMenu)
 	{
 		ImGuiStyle* style = &ImGui::GetStyle();
@@ -369,10 +375,11 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		style->Colors[ImGuiCol_SeparatorActive] = *Colors::color;
 		style->Colors[ImGuiCol_SeparatorHovered] = *Colors::color;
 		style->ItemSpacing = ImVec2(NULL, 8);
-		ImGui::SetNextWindowSize(ImVec2(320, 550));
+		ImGui::SetNextWindowSize(ImVec2(320, 600));
 		style->WindowBorderSize = 3.0f;
 		//style->WindowRounding = 0.0f;
 		style->Colors[ImGuiCol_Text] = Colors::black;
+
 		ImGui::Begin("SOTF Mod Menu " ICON_FA_TREE, &Globals::Gui::isOpen, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 		style->Colors[ImGuiCol_Text] = Colors::white;
 
@@ -462,7 +469,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Separator();
 			
 			style->Colors[ImGuiCol_Text] = Colors::dynamicText1;
-			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Single Player Only" ICON_FA_ARROW_LEFT_LONG);
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Single Player Only " ICON_FA_ARROW_LEFT_LONG);
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -474,6 +481,21 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			}
 			else {
 				Colors::dynamicText1 = Colors::white;
+			}
+
+			style->Colors[ImGuiCol_Text] = Colors::itemsText;
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Modded Items " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				Colors::itemsText = Colors::hoveredText;
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "items";
+				}
+			}
+			else {
+				Colors::itemsText = Colors::white;
 			}
 
 			style->Colors[ImGuiCol_Text] = Colors::dynamicText0;
@@ -522,6 +544,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			}
 			style->Colors[ImGuiCol_Text] = Colors::white;
 		}
+
 		// Single Player window
 		if (Globals::Gui::window == "single")
 		{
@@ -551,6 +574,228 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			{
 				InfiniteStamina();
 			}
+		}
+
+		// Modded items window
+		if (Globals::Gui::window == "items")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "home";
+				}
+			}
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom HangGlider " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "glider";
+				}
+			}
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom KnightV " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "knightV";
+				}
+			}
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Pistol " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					if (Config::Value::Pistol::IsPistolEquipped) {
+						Globals::Gui::window = "pistol";
+					}
+				}
+			}
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x), HelpMarker("Pistol Must be Equipped to open the menu");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom FlashLight " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					if (Config::Value::FlashLight::IsFlashLightEquipped) {
+						Globals::Gui::window = "flashlight";
+					}
+				}
+			}
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x), HelpMarker("FlashLight Must be Equipped to open the menu");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Lighter " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					if (Config::Value::Lighter::IsLighterEquipped) {
+						Globals::Gui::window = "lighter";
+					}
+				}
+			}
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x), HelpMarker("Lighter Must be Equipped to open the menu");
+		}
+
+		// Custom HangGlider window
+		if (Globals::Gui::window == "glider")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "home";
+				}
+			}
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "items";
+				}
+			}
+
+			ImGui::Checkbox("Enable/Disable", &Config::bGlider);
+			ImGui::SliderFloat("Flight Speed", &Config::Value::Glider::_constantForwardForce, 10.0f, 1000.0f, "%.1f");
+			ImGui::Checkbox("No DownForce", &Config::Value::Glider::noDownForce);
+			if (ImGui::SmallButton("Default")) {
+				Config::Value::Glider::_constantForwardForce = Config::Value::Glider::Def_constantForwardForce;
+			}
+		}
+
+		// Custom KnightV window
+		if (Globals::Gui::window == "knightV")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "home";
+				}
+			}
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "items";
+				}
+			}
+
+			ImGui::Checkbox("Enable/Disable", &Config::bKnightV);
+			ImGui::SliderFloat("Max Speed", &Config::Value::KnightV::MaxVelocity, 10.0f, 100.0f, "%.0f");
+			ImGui::SliderFloat("Jump Force", &Config::Value::KnightV::JumpForce, 4.0f, 500.0f, "%.0f");
+			ImGui::SliderFloat("Max Lean", &Config::Value::KnightV::MinMaxLean, 1.0f, 100.0f, "%.0f");
+			if (ImGui::SmallButton("Default")) {
+				Config::Value::KnightV::MaxVelocity = Config::Value::KnightV::DefMaxVelocity;
+				Config::Value::KnightV::JumpForce = Config::Value::KnightV::DefJumpForce;
+				Config::Value::KnightV::MinMaxLean = Config::Value::KnightV::DefMinMaxLean;
+			}
+		}
+
+		// Custom Pistol window
+		if (Globals::Gui::window == "pistol")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "home";
+				}
+			}
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "items";
+				}
+			}
+
+			ImGui::Checkbox("Enable/Disable", &Config::bPistol);
+			ImGui::Checkbox("Rapid Fire", &Config::Value::Pistol::RapidFire);
+		}
+
+		// Custom FalshLight window
+		if (Globals::Gui::window == "flashlight")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "home";
+				}
+			}
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "items";
+				}
+			}
+
+			ImGui::Checkbox("Enable/Disable", &Config::bFlashLight);
+			ImGui::SliderFloat("Light Strength", &Config::Value::FlashLight::_maxLightIntensity, 16.5f, 40.0f, "%.1f");
+			ImGui::Checkbox("No Battery Drain", &Config::Value::FlashLight::NoDrain);
+		}
+
+		// Custom Lighter window
+		if (Globals::Gui::window == "lighter")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "home";
+				}
+			}
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "items";
+				}
+			}
+
+			ImGui::Checkbox("Enable/Disable", &Config::bLighter);
+			ImGui::SliderFloat("Light Strength", &Config::Value::Lighter::intensity, 512.0f, 1000000.0f, "%.0f");
+			ImGui::Checkbox("Incremented Range", &Config::Value::Lighter::IncRange);
+			ImGui::ColorEdit4("Light Color", (float*)&Globals::Gui::LighterColor);
 		}
 
 		// Teleport window

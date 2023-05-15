@@ -12,9 +12,16 @@ namespace Globals
     inline Unity::CGameObject* LocalPlayer;
     inline Unity::CComponent* Vitals;
     inline Unity::CComponent* FirstPersonCharacter;
+    inline Unity::CComponent* PlayerHangGliderAction;
+    inline Unity::CComponent* CompactPistolWeaponController;
+    inline Unity::CComponent* PlayerKnightVAction;
+    inline Unity::CComponent* KnightVControlDefinition;
+    inline Unity::CComponent* FlashlightController;
+    inline Unity::CComponent* PlasmaLighterController;
+    inline Unity::CComponent* LocalPlayerPlasmaLight;
 
     inline DWORD Cheats_CheatsBridge_o{};
-    
+
     namespace Stats
     {
         inline Unity::CObject* Health;
@@ -51,6 +58,7 @@ namespace Globals
         inline bool RainbowTheme = false;
         inline bool RainbowThread = true;
         inline float RainbowDelay{ 0.5f };
+        inline ImVec4 LighterColor(0, 1, 0, 1);
 
         inline bool showMap = false;
 

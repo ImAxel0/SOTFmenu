@@ -36,6 +36,7 @@
 #define UNITY_GAMEOBJECT_SETACTIVE 									UNITY_GAMEOBJECT_CLASS"::set_active"
 #define UNITY_GAMEOBJECT_SETLAYER 									UNITY_GAMEOBJECT_CLASS"::set_layer"
 #define UNITY_GAMEOBJECT_FINDGAMEOBJECTWITHTAG					    		UNITY_GAMEOBJECT_CLASS"::FindGameObjectsWithTag"
+#define UNITY_GAMEOBJECT_GETCOMPONENTINCHILDREN 					UNITY_GAMEOBJECT_CLASS"::GetComponentInChildren"
 
 // LayerMask
 #define UNITY_LAYERMASK_CLASS										"UnityEngine.LayerMask"
@@ -72,6 +73,7 @@
 #define UNITY_TRANSFORM_SETROTATION									UNITY_TRANSFORM_CLASS"::set_rotation_Injected"
 #define UNITY_TRANSFORM_SETLOCALPOSITION							UNITY_TRANSFORM_CLASS"::set_localPosition_Injected"
 #define UNITY_TRANSFORM_SETLOCALSCALE								UNITY_TRANSFORM_CLASS"::set_localScale_Injected"
+#define UNITY_TRANSFORM_FINDCHILD                                   UNITY_TRANSFORM_CLASS"::FindRelativeTransformWithPath"
 
 namespace Unity
 {

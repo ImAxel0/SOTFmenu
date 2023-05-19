@@ -17,6 +17,11 @@ namespace Config
     inline bool bPistol = false;
     inline bool bFlashLight = false;
     inline bool bLighter = false;
+    inline bool bRebreather = false;
+    inline bool bRopeGun = false;
+    inline bool bSunControl = false;
+    inline bool bWindControl = false;
+    inline bool bDayTime = false;
 
     inline bool bHealthSP = false;
     inline bool bStaminaSP = false;
@@ -66,15 +71,46 @@ namespace Config
             inline float intensity = 512.0f;
             inline bool IncRange = false;
         }
+
+        namespace Rebreather
+        {
+            inline bool IsRebreatherEquipped = false;
+            inline float _airConsumptionRate = 2.0f;
+            inline float _maxLightIntensity = 18.5f;
+            inline bool InfOxigen = false;
+        }
+
+        namespace RopeGun
+        {
+            inline bool IsRopeGunEquipped = false;
+            inline float _maxFiringRange = 50.0f;
+            inline float _maxRopeLength = 150.0f;
+            inline bool InfLength = false;
+        }
+
+        namespace SunControl
+        {
+            inline float Intensity = 100000.0f;
+        }
+
+        namespace WindControl
+        {
+            inline float Intensity = 1.0f;
+        }
+
+        namespace DayTimeControl
+        {
+            inline float _baseSpeedMultiplier = 1.0f;
+        }
     }
 
     namespace Offsets
     {
-        inline uintptr_t ApplyDamage = 0x32F8AC0;
-        inline uintptr_t AdjustStamina = 0x32F8E50;
-        inline uintptr_t RemoveAmmo = 0x3591260;
+        inline uintptr_t ApplyDamage = 0x32F88F0;
+        inline uintptr_t AdjustStamina = 0x32F8C80;
+        inline uintptr_t RemoveAmmo = 0x3591410;
         inline uintptr_t GrabCheats_CheatsBridge_o = 0x59A160;
-        inline uintptr_t GodMode = 0x3659B60;
-        inline uintptr_t InfiniteStamina = 0x3659BC0;
+        inline uintptr_t GodMode = 0x365B150;
+        inline uintptr_t InfiniteStamina = 0x365B1B0;
     }
 }

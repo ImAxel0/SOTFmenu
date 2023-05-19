@@ -10,6 +10,9 @@ namespace Globals
 {
     inline uintptr_t GameAssembly{ NULL };
     inline Unity::CGameObject* LocalPlayer;
+    inline Unity::CGameObject* Atmosphere;
+    inline Unity::CGameObject* GameManagers;
+
     inline Unity::CComponent* Vitals;
     inline Unity::CComponent* FirstPersonCharacter;
     inline Unity::CComponent* PlayerHangGliderAction;
@@ -19,6 +22,12 @@ namespace Globals
     inline Unity::CComponent* FlashlightController;
     inline Unity::CComponent* PlasmaLighterController;
     inline Unity::CComponent* LocalPlayerPlasmaLight;
+    inline Unity::CComponent* RebreatherController;
+    inline Unity::CComponent* RopeGunController;
+    inline Unity::CComponent* SunLightManager;
+    inline Unity::CComponent* SunLight;
+    inline Unity::CComponent* WindManager;
+    inline Unity::CComponent* TimeOfDayHolder;
 
     inline DWORD Cheats_CheatsBridge_o{};
 
@@ -59,6 +68,7 @@ namespace Globals
         inline bool RainbowThread = true;
         inline float RainbowDelay{ 0.5f };
         inline ImVec4 LighterColor(0, 1, 0, 1);
+        inline ImVec4 SunLightColor(1, 0, 0, 1);
 
         inline bool showMap = false;
 

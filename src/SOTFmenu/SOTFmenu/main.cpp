@@ -53,7 +53,7 @@ DWORD WINAPI MainThread(LPVOID lpReserved)
 			printf("[+] MinHook Initialized!\n\n");
 
 			findInMemory();
-			while (Globals::LocalPlayer == 0) {
+			while (Globals::LocalPlayer == 0 || Globals::SunLight == 0) {
 				Sleep(500);
 				findInMemory();
 			}

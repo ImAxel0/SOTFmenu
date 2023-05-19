@@ -107,12 +107,90 @@ void findInMemory()
 		if (!Globals::KnightVControlDefinition)
 		{
 			SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
-			printf("[-] Cannot find KnightVControlDefinition\n");
+			printf("[-] Cannot find KnightVControlDefinition component\n");
 		}
 		else
 		{
 			SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
-			std::cout << "	-> Found KnightVControlDefinition: " << Globals::KnightVControlDefinition << '\n';
+			std::cout << "	-> Found KnightVControlDefinition component: " << Globals::KnightVControlDefinition << '\n';
+		}
+	}
+
+	// Atmosphere CGameObject
+	Globals::Atmosphere = Unity::GameObject::Find("Atmosphere");
+
+	if (!Globals::Atmosphere) {
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+		printf("[-] Cannot find Atmosphere GameObject\n");
+	}
+	else {
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+		std::cout << "[+] Found Atmosphere GameObject: " << Globals::Atmosphere << '\n';
+	}
+
+	if (Globals::Atmosphere) {
+		// SunControl
+		Globals::SunLightManager = Globals::Atmosphere->GetComponentInChildren("Sons.Atmosphere.SunLightManager");
+
+		if (!Globals::SunLightManager) {
+			SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+			printf("[-] Cannot find SunLightManager component\n");
+		}
+		else {
+			SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+			std::cout << "	-> Found SunLightManager component: " << Globals::SunLightManager << '\n';
+		}
+
+		if (Globals::SunLightManager) {
+			Globals::SunLight = Globals::SunLightManager->GetMemberValue<Unity::CComponent*>("_sunLight");
+
+			if (!Globals::SunLight) {
+				SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+				printf("[-] Cannot find SunLight component\n");
+				return;
+			}
+			else {
+				SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+				std::cout << "		-> Found SunLight component: " << Globals::SunLight << '\n';
+			}
+		}
+		// WindControl
+		Globals::WindManager = Globals::Atmosphere->GetComponentInChildren("Sons.Atmosphere.WindManager");
+
+		if (!Globals::WindManager) {
+			SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+			printf("[-] Cannot find WindManager component\n");
+		}
+		else {
+			SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+			std::cout << "[+] Found WindManager component : " << Globals::WindManager << '\n';
+		}
+	}
+
+	// GameManagers CGameObject
+	Globals::GameManagers = Unity::GameObject::Find("GameManagers");
+
+	if (!Globals::GameManagers) {
+
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+		printf("[-] Cannot find GameManagers GameObject\n");
+	}
+	else {
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+		std::cout << "[+] Found GameManagers GameObject: " << Globals::GameManagers << '\n';
+	}
+
+	if (Globals::GameManagers) {
+
+		Globals::TimeOfDayHolder = Globals::GameManagers->GetComponentInChildren("Sons.Environment.TimeOfDayHolder");
+		if (!Globals::TimeOfDayHolder) {
+
+			SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+			printf("[-] Cannot find TimeOfDayHolder component\n");
+		}
+		else {
+			SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+			std::cout << "[+] Found TimeOfDayHolder component: " << Globals::TimeOfDayHolder << '\n';
 		}
 	}
 
@@ -194,6 +272,24 @@ bool findLighter()
 		return TRUE;
 	}
 	return FALSE;
+}
+
+bool findRebreather()
+{
+	Globals::RebreatherController = Globals::LocalPlayer->GetComponentInChildren("Sons.Gameplay.RebreatherController");
+	if (!Globals::RebreatherController) {
+		return FALSE;
+	}
+	return TRUE;
+}
+
+bool findRopeGun()
+{
+	Globals::RopeGunController = Globals::LocalPlayer->GetComponentInChildren("Sons.Weapon.RopeGunController");
+	if (!Globals::RopeGunController) {
+		return FALSE;
+	}
+	return TRUE;
 }
 
 void setMemory()
@@ -348,6 +444,18 @@ void setMemory()
 		{
 			if (Config::Value::Pistol::RapidFire) {
 				Globals::CompactPistolWeaponController->SetMemberValue<float>("_fireDelay", 0);
+
+				INPUT input{ 0 };
+				input.type = INPUT_MOUSE;
+
+				if (GetAsyncKeyState(0x51)) // letter q
+				{
+					input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+					SendInput(1, &input, sizeof(INPUT));
+
+					input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+					SendInput(1, &input, sizeof(INPUT));
+				}
 			}
 			else if (!Config::Value::Pistol::RapidFire) {
 				Globals::CompactPistolWeaponController->SetMemberValue<float>("_fireDelay", 0.2f);
@@ -404,6 +512,91 @@ void setMemory()
 			Globals::LocalPlayerPlasmaLight->SetMemberValue<float>("intensity", 512.0f);
 			Globals::LocalPlayerPlasmaLight->SetMemberValue<ImVec4>("color", ImVec4(0.67840004f, 0, 1, 1));
 			Globals::LocalPlayerPlasmaLight->SetMemberValue<float>("range", 15.0f);
+		}
+	}
+	// Custom Rebreather
+	if (Config::bRebreather)
+	{
+		if (Globals::RebreatherController)
+		{
+			Globals::RebreatherController->SetMemberValue<float>("_airConsumptionRate", 0);
+			Globals::RebreatherController->SetMemberValue<float>("_maxLightIntensity", Config::Value::Rebreather::_maxLightIntensity);
+
+			if (Config::Value::Rebreather::InfOxigen)
+			{
+				Globals::RebreatherController->SetMemberValue<float>("_airConsumptionRate", 0);
+			}
+			else if (!Config::Value::Rebreather::InfOxigen)
+			{
+				Globals::RebreatherController->SetMemberValue<float>("_airConsumptionRate", 2.0f);
+			}
+		}
+	}
+	else {
+		if (Globals::RebreatherController)
+		{
+			Globals::RebreatherController->SetMemberValue<float>("_airConsumptionRate", 2.0f);
+			Globals::RebreatherController->SetMemberValue<float>("_maxLightIntensity", 18.5f);
+		}
+	}
+	// Custom RopeGun
+	if (Config::bRopeGun)
+	{
+		if (Globals::RopeGunController)
+		{
+			if (Config::Value::RopeGun::InfLength)
+			{
+				Globals::RopeGunController->SetMemberValue<float>("_maxFiringRange", 50000000.0f);
+				Globals::RopeGunController->SetMemberValue<float>("_maxRopeLength", 50000000.0f);
+			}
+			else if (!Config::Value::RopeGun::InfLength)
+			{
+				Globals::RopeGunController->SetMemberValue<float>("_maxFiringRange", 50.0f);
+				Globals::RopeGunController->SetMemberValue<float>("_maxRopeLength", 150.0f);
+			}
+		}
+	}
+	else {
+		if (Globals::RopeGunController)
+		{
+			Globals::RopeGunController->SetMemberValue<float>("_maxFiringRange", 50.0f);
+			Globals::RopeGunController->SetMemberValue<float>("_maxRopeLength", 150.0f);
+		}
+	}
+	// Sun Control
+	if (Config::bSunControl)
+	{
+		if (Globals::SunLight) {
+			Globals::SunLight->SetMemberValue<ImVec4>("color", Globals::Gui::SunLightColor);
+			Globals::SunLight->SetMemberValue<float>("intensity", Config::Value::SunControl::Intensity);
+		}
+	}
+	else {
+
+		if (Globals::SunLight) {
+			Globals::SunLight->SetMemberValue<ImVec4>("color", ImVec4(1, 1, 1, 1));
+			Globals::SunLight->SetMemberValue<float>("intensity", 100000.0f);
+		}
+	}
+	// Wind Control
+	if (Config::bWindControl)
+	{
+		if (Globals::WindManager) {
+			Globals::WindManager->SetMemberValue<float>("_appliedStormIntensityMultiplier", Config::Value::WindControl::Intensity);
+		}
+	}
+	// DayTime Control
+	if (Config::bDayTime)
+	{
+		if (Globals::TimeOfDayHolder) 
+		{
+			Globals::TimeOfDayHolder->SetMemberValue<float>("_baseSpeedMultiplier", Config::Value::DayTimeControl::_baseSpeedMultiplier);
+		}
+	}
+	else {
+		if (Globals::TimeOfDayHolder) {
+
+			Globals::TimeOfDayHolder->SetMemberValue<float>("_baseSpeedMultiplier", 1.0f);
 		}
 	}
 }

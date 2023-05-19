@@ -59,6 +59,7 @@ namespace Colors
 	ImColor dynamicText4(255, 255, 255);
 	ImColor dynamicAbout(255, 255, 255);
 	ImColor itemsText(255, 255, 255);
+	ImColor environmentText(255, 255, 255);
 	ImColor hoveredText(88, 127, 255);
 }
 
@@ -317,6 +318,31 @@ void DisplayMap(ImTextureID texture)
 	}
 }
 
+void SetWindow(std::string window_string)
+{
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+		{
+			Globals::Gui::window = window_string;
+		}
+	}
+}
+
+void TeleportTo(Unity::Vector3 xyz, ID3D11ShaderResourceView* image)
+{
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+		{
+			Globals::LocalPlayer->GetTransform()->SetPosition(xyz);
+		}
+		DisplayTeleportImage(image);
+	}
+}
+
 bool init = false;
 HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
@@ -358,6 +384,8 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 	Config::Value::Pistol::IsPistolEquipped = findPistol();
 	Config::Value::FlashLight::IsFlashLightEquipped = findFlashLight();
 	Config::Value::Lighter::IsLighterEquipped = findLighter();
+	Config::Value::Rebreather::IsRebreatherEquipped = findRebreather();
+	Config::Value::RopeGun::IsRopeGunEquipped = findRopeGun();
 
 	if (Globals::Gui::showMenu)
 	{
@@ -498,6 +526,22 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 				Colors::itemsText = Colors::white;
 			}
 
+			style->Colors[ImGuiCol_Text] = Colors::environmentText;
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Environment " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				Colors::environmentText = Colors::hoveredText;
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "environment";
+				}
+			}
+			else {
+				Colors::environmentText = Colors::white;
+			}
+			style->Colors[ImGuiCol_Text] = Colors::white;
+
 			style->Colors[ImGuiCol_Text] = Colors::dynamicText0;
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Teleport " ICON_FA_ARROW_LEFT_LONG);
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
@@ -556,14 +600,8 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			}
 
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
+
 			// GodMode SP
 			if (ImGui::Checkbox(ICON_FA_HEART " God Mode SP", &Config::bHealthSP))
 			{
@@ -580,97 +618,38 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		if (Globals::Gui::window == "items")
 		{
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
 
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom HangGlider " ICON_FA_ARROW_LEFT_LONG);
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "glider";
-				}
-			}
+			SetWindow("glider");
 
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom KnightV " ICON_FA_ARROW_LEFT_LONG);
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "knightV";
-				}
-			}
+			SetWindow("knightV");
 
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Pistol " ICON_FA_ARROW_LEFT_LONG);
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					if (Config::Value::Pistol::IsPistolEquipped) {
-						Globals::Gui::window = "pistol";
-					}
-				}
-			}
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x), HelpMarker("Pistol Must be Equipped to open the menu");
+			SetWindow("pistol");
 
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom FlashLight " ICON_FA_ARROW_LEFT_LONG);
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					if (Config::Value::FlashLight::IsFlashLightEquipped) {
-						Globals::Gui::window = "flashlight";
-					}
-				}
-			}
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x), HelpMarker("FlashLight Must be Equipped to open the menu");
+			SetWindow("flashlight");
 
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Lighter " ICON_FA_ARROW_LEFT_LONG);
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					if (Config::Value::Lighter::IsLighterEquipped) {
-						Globals::Gui::window = "lighter";
-					}
-				}
-			}
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x), HelpMarker("Lighter Must be Equipped to open the menu");
+			SetWindow("lighter");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Rebreather " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("rebreather");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom RopeGun " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("ropegun");
 		}
 
 		// Custom HangGlider window
 		if (Globals::Gui::window == "glider")
 		{
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
 
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "items";
-				}
-			}
+			SetWindow("items");
 
 			ImGui::Checkbox("Enable/Disable", &Config::bGlider);
 			ImGui::SliderFloat("Flight Speed", &Config::Value::Glider::_constantForwardForce, 10.0f, 1000.0f, "%.1f");
@@ -684,24 +663,10 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		if (Globals::Gui::window == "knightV")
 		{
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
 
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "items";
-				}
-			}
+			SetWindow("items");
 
 			ImGui::Checkbox("Enable/Disable", &Config::bKnightV);
 			ImGui::SliderFloat("Max Speed", &Config::Value::KnightV::MaxVelocity, 10.0f, 100.0f, "%.0f");
@@ -718,51 +683,23 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		if (Globals::Gui::window == "pistol")
 		{
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
 
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "items";
-				}
-			}
+			SetWindow("items");
 
 			ImGui::Checkbox("Enable/Disable", &Config::bPistol);
 			ImGui::Checkbox("Rapid Fire", &Config::Value::Pistol::RapidFire);
+			ImGui::Text("Press Q to shoot in rapid fire mode");
 		}
-
 		// Custom FalshLight window
 		if (Globals::Gui::window == "flashlight")
 		{
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
 
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "items";
-				}
-			}
+			SetWindow("items");
 
 			ImGui::Checkbox("Enable/Disable", &Config::bFlashLight);
 			ImGui::SliderFloat("Light Strength", &Config::Value::FlashLight::_maxLightIntensity, 16.5f, 40.0f, "%.1f");
@@ -773,24 +710,10 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		if (Globals::Gui::window == "lighter")
 		{
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
 
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "items";
-				}
-			}
+			SetWindow("items");
 
 			ImGui::Checkbox("Enable/Disable", &Config::bLighter);
 			ImGui::SliderFloat("Light Strength", &Config::Value::Lighter::intensity, 512.0f, 1000000.0f, "%.0f");
@@ -798,18 +721,100 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::ColorEdit4("Light Color", (float*)&Globals::Gui::LighterColor);
 		}
 
+		// Custom Rebreather window
+		if (Globals::Gui::window == "rebreather")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("items");
+
+			ImGui::Checkbox("Enable/Disable", &Config::bRebreather);
+			ImGui::SliderFloat("Light Strength", &Config::Value::Rebreather::_maxLightIntensity, 18.5f, 40.0f, "%.1f");
+			ImGui::Checkbox("Unlimited Oxigen", &Config::Value::Rebreather::InfOxigen);
+		}
+
+		// Custom RopeGun window
+		if (Globals::Gui::window == "ropegun")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("items");
+
+			ImGui::Checkbox("Enable/Disable", &Config::bRopeGun);
+			ImGui::Checkbox("Infinite Length", &Config::Value::RopeGun::InfLength);
+		}
+
+		// Environment window
+		if (Globals::Gui::window == "environment")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("home");
+
+			// Sun Control
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Sun Control " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("sun");
+
+			// Wind Control
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Wind Control " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("wind");
+
+			// DayTime Control
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " DayTime Control " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("daytime");
+		}
+
+		if (Globals::Gui::window == "sun")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("environment");
+
+			ImGui::Checkbox("Enable/Disable", &Config::bSunControl);
+			ImGui::SliderFloat("Light Intensity", &Config::Value::SunControl::Intensity, 0, 10000000.0f, "%.0f");
+			ImGui::ColorEdit4("Sun Light Color", (float*)&Globals::Gui::SunLightColor);
+			if (ImGui::SmallButton("Default"))
+			{
+				Globals::Gui::SunLightColor = ImVec4(1, 1, 1, 1);
+				Config::Value::SunControl::Intensity = 100000.0f;
+			}
+		}
+
+		if (Globals::Gui::window == "wind")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("environment");
+
+			ImGui::Checkbox("Enable/Disable", &Config::bWindControl);
+			ImGui::SliderFloat("Wind Intensity", &Config::Value::WindControl::Intensity, 0, 5.0f, "%.1f");
+		}
+
+		if (Globals::Gui::window == "daytime")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("environment");
+
+			ImGui::Checkbox("Enable/Disable", &Config::bDayTime);
+			ImGui::SliderFloat("DayTime Speed Multiplier", &Config::Value::DayTimeControl::_baseSpeedMultiplier, 0, 10000.0f, "%.0f");
+			ImGui::Text("0 = freeze time\nCTRL + Left click to manual input the value");
+		}
+
 		// Teleport window
 		if (Globals::Gui::window == "teleport")
 		{
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
 
 			ImGui::Checkbox("Interactive Map", &Globals::Gui::showMap);
 			if (Globals::Gui::showMap)
@@ -820,301 +825,74 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			}
 
 			ImGui::Text("My Base (Lake)");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1000, 120, -57));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(lake_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1000, 120, -57), lake_texture);
 
 			ImGui::Text("Shotgun Grave Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1340, 102, 1412));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(shotgun_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1340, 102, 1412), shotgun_texture);
 
 			ImGui::Text("Pistol Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1797, 16, 578));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(pistol_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1797, 16, 578), pistol_texture);
 
 			ImGui::Text("Hang Glider 1st Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1307, 87, 1732));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(hang_glider_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1307, 87, 1732), hang_glider_texture);
 
 			ImGui::Text("Knight V 1st Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1026, 231, -625));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(knightV_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1026, 231, -625), knightV_texture);
 
 			ImGui::Text("Top Of The Mountain");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(4, 716, -459));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(top_of_mountain_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(4, 716, -459), top_of_mountain_texture);
 
 			ImGui::Text("Rebreather + Stun Gun Cave Entrance");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-418, 19, 1532));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(rebreather_stungun_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-418, 19, 1532), rebreather_stungun_texture);
 
 			ImGui::Text("Flashlight Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-630, 142, 391));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(flashlight_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-630, 142, 391), flashlight_texture);
 
 			ImGui::Text("Modern Axe Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-704, 108, 450));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(modern_axe_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-704, 108, 450), modern_axe_texture);
 
 			ImGui::Text("Machete Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-65, 20, 1458));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(machete_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-65, 20, 1458), machete_texture);
 
 			ImGui::Text("Stun Baton Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1142, 134, -157));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(stun_baton_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1142, 134, -157), stun_baton_texture);
 
 			ImGui::Text("Putter Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(1024, 145, 1212));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(putter_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(1024, 145, 1212), putter_texture);
 
 			ImGui::Text("Binocular Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1109, 20, 1721));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(binocular_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1109, 20, 1721), binocular_texture);
 
 			ImGui::Text("Revolver Loc. (Bunker Entrance?)");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(1111, 132, 1003));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(revolver_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(1111, 132, 1003), revolver_texture);
 
 			ImGui::Text("Cross + Rope Gun Cave Entrance");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1113, 132, -171));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(rope_gun_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1113, 132, -171), rope_gun_texture);
 
 			ImGui::Text("Slingshot + Shovel Cave Entrance");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-531, 200, 124));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(shovel_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-531, 200, 124), shovel_texture);
 
 			ImGui::Text("Compound Bow Bunker Entrance");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1136, 284, -1095));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(moder_bow_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1136, 284, -1095), moder_bow_texture);
 
 			ImGui::Text("3D Printer + Guest KeyCard + Guitar + Chainsaw Bunker Entrance");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1188, 70, 133));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(chainsaw_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-1188, 70, 133), chainsaw_texture);
 
 			ImGui::Text("FireAxe + Maintenance Card Bunker Entrance");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-474, 90, 710));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(fire_axe_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(-474, 90, 710), fire_axe_texture);
 
 			ImGui::Text("VIP Keycard + Crossbow Bunker Entrance");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(-1014, 102, 1024));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(crossbow_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
-			/*
-			ImGui::Text("Golden Armor Loc.");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(180, 145, -667));
-				}
-			}
-			*/
+			TeleportTo(Unity::Vector3(-1014, 102, 1024), crossbow_texture);
+
 			ImGui::Text("End Game Bunker Entrance");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::LocalPlayer->GetTransform()->SetPosition(Unity::Vector3(1756, 45, 553));
-				}
-				style->Colors[ImGuiCol_Text] = Colors::black;
-				DisplayTeleportImage(endgame_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
-			}
+			TeleportTo(Unity::Vector3(1756, 45, 553), endgame_texture);
 		}
 
 		// Theme window
 		if (Globals::Gui::window == "theme")
 		{
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
 
 			if (!Globals::Gui::RainbowTheme)
 			{
@@ -1152,14 +930,8 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		if (Globals::Gui::window == "debug")
 		{
 			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-				{
-					Globals::Gui::window = "home";
-				}
-			}
+			SetWindow("home");
+
 			ImGui::Text("Player Coords");
 			Unity::Vector3 playerLoc = Globals::LocalPlayer->GetTransform()->GetPosition();
 			ImGui::InputFloat("X", &playerLoc.x, NULL, NULL, 0, ImGuiInputTextFlags_ReadOnly);

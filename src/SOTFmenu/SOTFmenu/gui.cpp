@@ -493,7 +493,9 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Checkbox(ICON_FA_PERSON_FALLING " No Fall Damage", &Config::bFallDamage);
 			// Disable Gravity
 			ImGui::Checkbox(ICON_FA_SHUTTLE_SPACE " No Gravity", &Config::bGravity);
-
+			// Instant build
+			ImGui::Checkbox(ICON_FA_BUILDING " Instant Build mode", &Config::bInstantBuild);
+				 
 			ImGui::Separator();
 			
 			style->Colors[ImGuiCol_Text] = Colors::dynamicText1;

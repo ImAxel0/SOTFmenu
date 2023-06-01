@@ -194,6 +194,33 @@ void findInMemory()
 		}
 	}
 
+	// StructureCrafingSystem CGameObject
+	Globals::StructureCraftingSystem = Unity::GameObject::Find("StructureCraftingSystem");
+
+	if (!Globals::StructureCraftingSystem) {
+
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+		printf("[-] Cannot find StructureCraftingSystem GameObject\n");
+	}
+	else {
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+		std::cout << "[+] Found StructureCraftingSystem GameObject: " << Globals::StructureCraftingSystem << '\n';
+	}
+
+	if (Globals::StructureCraftingSystem) {
+
+		Globals::StructureCraftingSystem_component = Globals::StructureCraftingSystem->GetComponentInChildren("Sons.Crafting.Structures.StructureCraftingSystem");
+		if (!Globals::StructureCraftingSystem_component) {
+
+			SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+			printf("[-] Cannot find StructureCraftingSystem component\n");
+		}
+		else {
+			SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+			std::cout << "[+] Found StructureCraftingSystem component: " << Globals::StructureCraftingSystem_component << '\n';
+		}
+	}
+
 	SetConsoleTextAttribute(Globals::Gui::hConsole, 9);
 	printf("Required Things Found!\n\n");
 
@@ -394,6 +421,19 @@ void setMemory()
 	}
 	else {
 		Globals::FirstPersonCharacter->SetMemberValue<bool>("_disableGravity", false);
+	}
+	// Instant Build
+	if (Config::bInstantBuild)
+	{
+		if (Globals::StructureCraftingSystem_component) {
+			Globals::StructureCraftingSystem_component->SetMemberValue<bool>("<InstantBuild>k__BackingField", true);
+		}
+	}
+	else {
+		if (Globals::StructureCraftingSystem_component)
+		{
+			Globals::StructureCraftingSystem_component->SetMemberValue<bool>("<InstantBuild>k__BackingField", false);
+		}
 	}
 	// Custom HangGlider
 	if (Config::bGlider)

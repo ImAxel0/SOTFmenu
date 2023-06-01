@@ -12,6 +12,7 @@ namespace Globals
     inline Unity::CGameObject* LocalPlayer;
     inline Unity::CGameObject* Atmosphere;
     inline Unity::CGameObject* GameManagers;
+    inline Unity::CGameObject* StructureCraftingSystem;
 
     inline Unity::CComponent* Vitals;
     inline Unity::CComponent* FirstPersonCharacter;
@@ -28,6 +29,7 @@ namespace Globals
     inline Unity::CComponent* SunLight;
     inline Unity::CComponent* WindManager;
     inline Unity::CComponent* TimeOfDayHolder;
+    inline Unity::CComponent* StructureCraftingSystem_component;
 
     inline DWORD Cheats_CheatsBridge_o{};
 

@@ -22,6 +22,7 @@ namespace Config
     inline bool bSunControl = false;
     inline bool bWindControl = false;
     inline bool bDayTime = false;
+    inline bool bInstantBuild = false;
 
     inline bool bHealthSP = false;
     inline bool bStaminaSP = false;
@@ -108,9 +109,9 @@ namespace Config
     {
         inline uintptr_t ApplyDamage = 0x33070C0;
         inline uintptr_t AdjustStamina = 0x3307440;
-        inline uintptr_t RemoveAmmo = 0x35A8C20;
+        inline uintptr_t RemoveAmmo = 0x35A8CC0;
         inline uintptr_t GrabCheats_CheatsBridge_o = 0x59B160;
-        inline uintptr_t GodMode = 0x3673520;
-        inline uintptr_t InfiniteStamina = 0x3673580;
+        inline uintptr_t GodMode = 0x36735C0;
+        inline uintptr_t InfiniteStamina = 0x3673620;
     }
 }

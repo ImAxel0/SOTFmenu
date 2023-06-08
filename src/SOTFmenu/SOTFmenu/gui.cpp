@@ -60,6 +60,7 @@ namespace Colors
 	ImColor dynamicAbout(255, 255, 255);
 	ImColor itemsText(255, 255, 255);
 	ImColor environmentText(255, 255, 255);
+	ImColor addItemsText(255, 255, 255);
 	ImColor hoveredText(88, 127, 255);
 }
 
@@ -343,6 +344,24 @@ void TeleportTo(Unity::Vector3 xyz, ID3D11ShaderResourceView* image)
 	}
 }
 
+void AddItem(int ItemID, int ItemQTY)
+{
+	Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::mainTheme;
+	ImGui::PushID(ItemID);
+	if (ImGui::SmallButton("Add " ICON_FA_ARROW_UP))
+	{
+		Globals::ItemInstanceManager->CallMethod<bool, int, int>(Globals::Methods::TryAddItems, ItemID, ItemQTY);
+	}
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	}
+	ImGui::PopID();
+	Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
+
+	
+}
+
 bool init = false;
 HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
@@ -389,31 +408,31 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 
 	if (Globals::Gui::showMenu)
 	{
-		ImGuiStyle* style = &ImGui::GetStyle();
-		style->WindowTitleAlign = ImVec2(0.5, 0.5);
-		style->Colors[ImGuiCol_Border] = *Colors::color;
-		style->Colors[ImGuiCol_TitleBg] = *Colors::color;
-		style->Colors[ImGuiCol_TitleBgActive] = *Colors::color;
-		style->Colors[ImGuiCol_Button] = ImColor(24, 24, 24);
-		style->Colors[ImGuiCol_ButtonHovered] = ImColor(45, 45, 45);
-		style->Colors[ImGuiCol_FrameBg] = ImColor(36, 36, 36);
-		style->Colors[ImGuiCol_FrameBgActive] = ImColor(36, 36, 36);
-		style->Colors[ImGuiCol_FrameBgHovered] = ImColor(45, 45, 45);
-		style->Colors[ImGuiCol_Separator] = *Colors::color;
-		style->Colors[ImGuiCol_SeparatorActive] = *Colors::color;
-		style->Colors[ImGuiCol_SeparatorHovered] = *Colors::color;
-		style->ItemSpacing = ImVec2(NULL, 8);
-		ImGui::SetNextWindowSize(ImVec2(320, 600));
-		style->WindowBorderSize = 3.0f;
-		//style->WindowRounding = 0.0f;
-		style->Colors[ImGuiCol_Text] = Colors::black;
+		Globals::Gui::style = &ImGui::GetStyle();
+		Globals::Gui::style->WindowTitleAlign = ImVec2(0.5, 0.5);
+		Globals::Gui::style->Colors[ImGuiCol_Border] = *Colors::color;
+		Globals::Gui::style->Colors[ImGuiCol_TitleBg] = *Colors::color;
+		Globals::Gui::style->Colors[ImGuiCol_TitleBgActive] = *Colors::color;
+		Globals::Gui::style->Colors[ImGuiCol_Button] = ImColor(24, 24, 24);
+		Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = ImColor(45, 45, 45);
+		Globals::Gui::style->Colors[ImGuiCol_FrameBg] = ImColor(36, 36, 36);
+		Globals::Gui::style->Colors[ImGuiCol_FrameBgActive] = ImColor(36, 36, 36);
+		Globals::Gui::style->Colors[ImGuiCol_FrameBgHovered] = ImColor(45, 45, 45);
+		Globals::Gui::style->Colors[ImGuiCol_Separator] = *Colors::color;
+		Globals::Gui::style->Colors[ImGuiCol_SeparatorActive] = *Colors::color;
+		Globals::Gui::style->Colors[ImGuiCol_SeparatorHovered] = *Colors::color;
+		Globals::Gui::style->ItemSpacing = ImVec2(NULL, 8);
+		ImGui::SetNextWindowSize(ImVec2(320, 660));
+		Globals::Gui::style->WindowBorderSize = 3.0f;
+		//Globals::Gui::style->WindowRounding = 0.0f;
+		Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::black;
 
 		ImGui::Begin("SOTF Mod Menu " ICON_FA_TREE, &Globals::Gui::isOpen, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
-		style->Colors[ImGuiCol_Text] = Colors::white;
+		Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
 
 		ImGui::BeginMenuBar();
 
-		style->Colors[ImGuiCol_Text] = Colors::dynamicAbout;
+		Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::dynamicAbout;
 		ImGui::Text("About");
 		if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 		{
@@ -427,7 +446,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		else {
 			Colors::dynamicAbout = Colors::white;
 		}
-		style->Colors[ImGuiCol_Text] = Colors::white;
+		Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
 
 		ImGui::EndMenuBar();
 
@@ -494,11 +513,11 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			// Disable Gravity
 			ImGui::Checkbox(ICON_FA_SHUTTLE_SPACE " No Gravity", &Config::bGravity);
 			// Instant build
-			ImGui::Checkbox(ICON_FA_BUILDING " Instant Build mode", &Config::bInstantBuild);
+			ImGui::Checkbox(ICON_FA_BUILDING " Instant Build mode (HOST only)", &Config::bInstantBuild);
 				 
 			ImGui::Separator();
 			
-			style->Colors[ImGuiCol_Text] = Colors::dynamicText1;
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::dynamicText1;
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Single Player Only " ICON_FA_ARROW_LEFT_LONG);
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 			{
@@ -513,7 +532,22 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 				Colors::dynamicText1 = Colors::white;
 			}
 
-			style->Colors[ImGuiCol_Text] = Colors::itemsText;
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::addItemsText;
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Add Item to Inventory " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				Colors::addItemsText = Colors::hoveredText;
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "additems";
+				}
+			}
+			else {
+				Colors::addItemsText = Colors::white;
+			}
+
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::itemsText;
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Modded Items " ICON_FA_ARROW_LEFT_LONG);
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 			{
@@ -528,7 +562,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 				Colors::itemsText = Colors::white;
 			}
 
-			style->Colors[ImGuiCol_Text] = Colors::environmentText;
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::environmentText;
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Environment " ICON_FA_ARROW_LEFT_LONG);
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 			{
@@ -542,9 +576,9 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			else {
 				Colors::environmentText = Colors::white;
 			}
-			style->Colors[ImGuiCol_Text] = Colors::white;
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
 
-			style->Colors[ImGuiCol_Text] = Colors::dynamicText0;
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::dynamicText0;
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Teleport " ICON_FA_ARROW_LEFT_LONG);
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 			{
@@ -559,7 +593,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 				Colors::dynamicText0 = Colors::white;
 			}
 
-			style->Colors[ImGuiCol_Text] = Colors::dynamicText3;
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::dynamicText3;
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Menu Theme " ICON_FA_ARROW_LEFT_LONG);
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 			{
@@ -574,7 +608,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 				Colors::dynamicText3 = Colors::white;
 			}
 
-			style->Colors[ImGuiCol_Text] = Colors::dynamicText4;
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::dynamicText4;
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Debug " ICON_FA_ARROW_LEFT_LONG);
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 			{
@@ -588,7 +622,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			else {
 				Colors::dynamicText4 = Colors::white;
 			}
-			style->Colors[ImGuiCol_Text] = Colors::white;
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
 		}
 
 		// Single Player window
@@ -614,6 +648,579 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			{
 				InfiniteStamina();
 			}
+		}
+
+		// Add Items window
+		if (Globals::Gui::window == "additems")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("home");
+
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::mainTheme;
+			ImGui::Text("There is no inventory limit but the item number\nwill reset to the max capacity after closing the\ngame.");
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " General Items " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("general");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Armor " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("armor");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Attachments " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("attachments");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Food & Drink " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("food&drink");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Keycards " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("keycards");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Materials " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("materials");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Seeds & Plants " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("seeds&plants");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Throwables " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("throwables");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Tools " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("tools");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Weapons & Ammo " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("weapons&ammo");
+		}
+
+		// General Items window
+		if (Globals::Gui::window == "general")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Album Cover");
+			AddItem(Config::Items::AlbumCover, 1);
+
+			ImGui::Text("Arm");
+			AddItem(Config::Items::Arm, 1);
+
+			ImGui::Text("Blazer");
+			AddItem(Config::Items::Blazer, 1);
+
+			ImGui::Text("Blue T-Shirt");
+			AddItem(Config::Items::BlueTshirt, 1);
+
+			ImGui::Text("Camouflage Suit");
+			AddItem(Config::Items::CamouflageSuit, 1);
+
+			ImGui::Text("Cash (x50)");
+			AddItem(Config::Items::Cash, 50);
+
+			ImGui::Text("Coins (x50)");
+			AddItem(Config::Items::Coins, 50);
+
+			ImGui::Text("DeepSleep Book");
+			AddItem(Config::Items::DeepSleepBook, 1);
+
+			ImGui::Text("Energy Mix");
+			AddItem(Config::Items::EnergyMix, 1);
+
+			ImGui::Text("Energy Mix +");
+			AddItem(Config::Items::EnergyMixPlus, 1);
+
+			ImGui::Text("Feather (x2)");
+			AddItem(Config::Items::Feather, 2);
+
+			ImGui::Text("Flippers");
+			AddItem(Config::Items::Flippers, 1);
+
+			ImGui::Text("Golf Ball");
+			AddItem(Config::Items::GolfBall, 1);
+
+			ImGui::Text("GPS Locator");
+			AddItem(Config::Items::GpsLocator, 1);
+
+			ImGui::Text("Head");
+			AddItem(Config::Items::Head, 1);
+
+			ImGui::Text("Healt Mix");
+			AddItem(Config::Items::HealthMix, 1);
+
+			ImGui::Text("Healt Mix +");
+			AddItem(Config::Items::HealthMixPlus, 1);
+
+			ImGui::Text("Hoodie");
+			AddItem(Config::Items::Hoodie, 1);
+
+			ImGui::Text("Leather Jacket");
+			AddItem(Config::Items::LeatherJacket, 1);
+
+			ImGui::Text("Leg");
+			AddItem(Config::Items::Leg, 1);
+
+			ImGui::Text("Lightbulb");
+			AddItem(Config::Items::Lightbulb, 1);
+
+			ImGui::Text("Meds");
+			AddItem(Config::Items::Meds, 1);
+
+			ImGui::Text("Pajamas");
+			AddItem(Config::Items::Pajamas, 1);
+
+			ImGui::Text("Paper Target");
+			AddItem(Config::Items::PaperTarget, 1);
+
+			ImGui::Text("Pennant Line book");
+			AddItem(Config::Items::PennantLineBook, 1);
+
+			ImGui::Text("Radio");
+			AddItem(Config::Items::Radio, 1);
+
+			ImGui::Text("Skin Pouch");
+			AddItem(Config::Items::SkinPouch, 1);
+
+			ImGui::Text("Solar Panel");
+			AddItem(Config::Items::SolarPanel, 1);
+
+			ImGui::Text("Swimsuit");
+			AddItem(Config::Items::Swimsuit, 1);
+
+			ImGui::Text("Tarp");
+			AddItem(Config::Items::Tarp, 1);
+
+			ImGui::Text("Turtle Egg");
+			AddItem(Config::Items::TurtleEgg, 1);
+
+			ImGui::Text("Wetsuit");
+			AddItem(Config::Items::Wetsuit, 1);
+
+			ImGui::Text("Winter Jacket");
+			AddItem(Config::Items::WinterJacket, 1);
+		}
+
+		// Weapons & Ammo window
+		if (Globals::Gui::window == "weapons&ammo")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Compound Bow");
+			AddItem(Config::Items::CompoundBow, 1);
+
+			ImGui::Text("Crafted Club");
+			AddItem(Config::Items::CraftedClub, 1);
+
+			ImGui::Text("Crafted Spear");
+			AddItem(Config::Items::CraftedSpear, 1);
+
+			ImGui::Text("Crossbow");
+			AddItem(Config::Items::Crossbow, 1);
+
+			ImGui::Text("Pistol");
+			AddItem(Config::Items::Pistol, 1);
+
+			ImGui::Text("Machete");
+			AddItem(Config::Items::Machete, 1);
+
+			ImGui::Text("Katana");
+			AddItem(Config::Items::Katana, 1);
+
+			ImGui::Text("Revolver");
+			AddItem(Config::Items::Revolver, 1);
+
+			ImGui::Text("Shotgun");
+			AddItem(Config::Items::Shotgun, 1);
+
+			ImGui::Text("Slingshot");
+			AddItem(Config::Items::Slingshot, 1);
+
+			ImGui::Text("Stun Baton");
+			AddItem(Config::Items::StunBaton, 1);
+
+			ImGui::Text("Taser");
+			AddItem(Config::Items::Taser, 1);
+
+			ImGui::Text("Pistol 9mm ammo (x50)");
+			AddItem(Config::Items::PistolAmmo, 50);
+
+			ImGui::Text("Shotgun buckshot ammo (x50)");
+			AddItem(Config::Items::ShotgunBuckshotAmmo, 50);
+
+			ImGui::Text("Shotgun slug ammo (x50)");
+			AddItem(Config::Items::ShotgunSlugAmmo, 50);
+
+			ImGui::Text("Stun gun ammo (x50)");
+			AddItem(Config::Items::StunGunAmmo, 50);
+
+			ImGui::Text("Crossbow Bolt (x10)");
+			AddItem(Config::Items::CrossbowBolt, 10);
+
+			ImGui::Text("3d printed arrow (x2)");
+			AddItem(Config::Items::PrintedArrow, 2);
+
+			ImGui::Text("Carbon fibre arrow (x2)");
+			AddItem(Config::Items::CarbonFibreArrow, 2);
+
+			ImGui::Text("Stone arrow (x2)");
+			AddItem(Config::Items::StoneArrow, 2);
+
+			ImGui::Text("Zipline rope (x5)");
+			AddItem(Config::Items::ZiplineRope, 5);
+		}
+
+		// Tools window
+		if (Globals::Gui::window == "tools")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Air Tank");
+			AddItem(Config::Items::AirTank, 1);
+
+			ImGui::Text("Binoculars");
+			AddItem(Config::Items::Binocular, 1);
+
+			ImGui::Text("Can Opener");
+			AddItem(Config::Items::CanOpener, 1);
+
+			ImGui::Text("Cross");
+			AddItem(Config::Items::Cross, 1);
+
+			ImGui::Text("Electric Chainsaw");
+			AddItem(Config::Items::ElectricChainsaw, 1);
+
+			ImGui::Text("Fireman's Axe");
+			AddItem(Config::Items::FirefighterAxe, 1);
+
+			ImGui::Text("Flashlight");
+			AddItem(Config::Items::Flashlight, 1);
+
+			ImGui::Text("Gold Mask");
+			AddItem(Config::Items::GoldMask, 1);
+
+			ImGui::Text("Guitar");
+			AddItem(Config::Items::Guitar, 1);
+
+			ImGui::Text("Modern Axe");
+			AddItem(Config::Items::ModernAxe, 1);
+
+			ImGui::Text("Printed Sled");
+			AddItem(Config::Items::PrintedSled, 1);
+
+			ImGui::Text("Putter");
+			AddItem(Config::Items::Putter, 1);
+
+			ImGui::Text("Rebreather");
+			AddItem(Config::Items::Rebreather, 1);
+
+			ImGui::Text("Red Mask");
+			AddItem(Config::Items::RedMask, 1);
+
+			ImGui::Text("Repair Tool");
+			AddItem(Config::Items::RepairTool, 1);
+
+			ImGui::Text("Rope Gun");
+			AddItem(Config::Items::RopeGun, 1);
+
+			ImGui::Text("Shovel");
+			AddItem(Config::Items::Shovel, 1);
+
+			ImGui::Text("Torch");
+			AddItem(Config::Items::Torch, 1);
+
+			ImGui::Text("Turtle Shell");
+			AddItem(Config::Items::TurtleShell, 1);
+		}
+
+		// Throwables window
+		if (Globals::Gui::window == "throwables")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Flare");
+			AddItem(Config::Items::Flare, 1);
+
+			ImGui::Text("Frag Grenade");
+			AddItem(Config::Items::FragGrenade, 1);
+
+			ImGui::Text("Molotov");
+			AddItem(Config::Items::Molotov, 1);
+
+			ImGui::Text("Timed Bomb");
+			AddItem(Config::Items::TimedBomb, 1);
+		}
+
+		// Materials window
+		if (Globals::Gui::window == "materials")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Animal Hide");
+			AddItem(Config::Items::AnimalHide, 1);
+
+			ImGui::Text("Batteries");
+			AddItem(Config::Items::Batteries, 1);
+
+			ImGui::Text("Bone");
+			AddItem(Config::Items::Bone, 1);
+
+			ImGui::Text("C4 Brick");
+			AddItem(Config::Items::C4Brick, 1);
+
+			ImGui::Text("Circuit Board");
+			AddItem(Config::Items::CircuitBoard, 1);
+
+			ImGui::Text("Cloth (x25)");
+			AddItem(Config::Items::Cloth, 25);
+
+			ImGui::Text("Duct Tape");
+			AddItem(Config::Items::DuctTape, 1);
+
+			ImGui::Text("Leaf (x50)");
+			AddItem(Config::Items::Leaf, 50);
+
+			ImGui::Text("Rock");
+			AddItem(Config::Items::Rock, 1);
+
+			ImGui::Text("Rope");
+			AddItem(Config::Items::Rope, 1);
+
+			ImGui::Text("Skull");
+			AddItem(Config::Items::Skull, 1);
+
+			ImGui::Text("Small Rocks (x2)");
+			AddItem(Config::Items::SmallRocks, 2);
+
+			ImGui::Text("Stick (x2)");
+			AddItem(Config::Items::Stick, 2);
+
+			ImGui::Text("Watch");
+			AddItem(Config::Items::Watch, 1);
+
+			ImGui::Text("Wire");
+			AddItem(Config::Items::Wire, 1);
+		}
+
+		// Attachments window
+		if (Globals::Gui::window == "attachments")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Laser Sight");
+			AddItem(Config::Items::LaserSight, 1);
+
+			ImGui::Text("Pistol Rail");
+			AddItem(Config::Items::PistolRail, 1);
+
+			ImGui::Text("Scope");
+			AddItem(Config::Items::Scope, 1);
+
+			ImGui::Text("Silencer");
+			AddItem(Config::Items::PistolSilencer, 1);
+
+			ImGui::Text("Shotgun Rail");
+			AddItem(Config::Items::ShotgunRail, 1);
+
+			ImGui::Text("Weapon Flashlight");
+			AddItem(Config::Items::FlashlightAttachment, 1);
+		}
+
+		// Food & Drink window
+		if (Globals::Gui::window == "food&drink")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Blackberries (x10)");
+			AddItem(Config::Items::Blackberries, 10);
+
+			ImGui::Text("Blueberries (x10)");
+			AddItem(Config::Items::Blueberries, 10);
+
+			ImGui::Text("CannedFoods");
+			AddItem(Config::Items::CannedFoods, 1);
+
+			ImGui::Text("Cat Food");
+			AddItem(Config::Items::CatFood, 1);
+
+			ImGui::Text("Cereal");
+			AddItem(Config::Items::Cereal, 1);
+
+			ImGui::Text("FlyAmanita");
+			AddItem(Config::Items::FlyAmanita, 1);
+
+			ImGui::Text("Guarana Berries (x10)");
+			AddItem(Config::Items::GuaranaBerries, 10);
+
+			ImGui::Text("HidnumRepandum");
+			AddItem(Config::Items::HidnumRepandum, 1);
+
+			ImGui::Text("MRE Pack");
+			AddItem(Config::Items::MREPack, 1);
+
+			ImGui::Text("Oyster (x5)");
+			AddItem(Config::Items::Oyster, 5);
+
+			ImGui::Text("Ramen Noodles");
+			AddItem(Config::Items::RamenNoodles, 1);
+
+			ImGui::Text("Raw Meat");
+			AddItem(Config::Items::RawMeat, 1);
+
+			ImGui::Text("Salmon Berries (x10)");
+			AddItem(Config::Items::SalmonBerries, 10);
+
+			ImGui::Text("Shiitake");
+			AddItem(Config::Items::Shiitake, 1);
+
+			ImGui::Text("Snow Berries (x10)");
+			AddItem(Config::Items::Snowberries, 10);
+
+			ImGui::Text("Soda");
+			AddItem(Config::Items::Soda, 1);
+
+			ImGui::Text("Steak Bite");
+			AddItem(Config::Items::SteakBite, 1);
+
+			ImGui::Text("Twin Berries (x10)");
+			AddItem(Config::Items::Twinberries, 10);
+
+			ImGui::Text("Yarrow");
+			AddItem(Config::Items::Yarrow, 1);
+		}
+
+		// Armor window
+		if (Globals::Gui::window == "armor")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Leaf Armor");
+			AddItem(Config::Items::LeafArmor, 1);
+
+			ImGui::Text("Hide Armor");
+			AddItem(Config::Items::HideArmor, 1);
+
+			ImGui::Text("Bone Armor");
+			AddItem(Config::Items::BoneArmor, 1);
+
+			ImGui::Text("Creepy Armor");
+			AddItem(Config::Items::CreepyArmor, 1);
+
+			ImGui::Text("Tech Armor");
+			AddItem(Config::Items::TechArmor, 1);
+
+			ImGui::Text("Golden Armor");
+			AddItem(Config::Items::GoldenArmor, 1);
+		}
+
+		// Seeds & Plants window
+		if (Globals::Gui::window == "seeds&plants")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Aloe Vera (x10)");
+			AddItem(Config::Items::AloeVera, 10);
+
+			ImGui::Text("Aloe Vera Seed (x10)");
+			AddItem(Config::Items::AloreVeraSeed, 10);
+
+			ImGui::Text("ArrowLeaf (x10)");
+			AddItem(Config::Items::ArrowLeaf, 10);
+
+			ImGui::Text("ArrowLeaf Seed (x10)");
+			AddItem(Config::Items::ArrowLeafSeed, 10);
+
+			ImGui::Text("Black Berry Seed (x10)");
+			AddItem(Config::Items::BlackberrySeed, 10);
+
+			ImGui::Text("Blue Berry Seed (x10)");
+			AddItem(Config::Items::BlueberrySeed, 10);
+
+			ImGui::Text("Chicory (x10)");
+			AddItem(Config::Items::Chicory, 10);
+
+			ImGui::Text("Chicory Seed (x10)");
+			AddItem(Config::Items::ChicorySeed, 10);
+
+			ImGui::Text("Devil's Club (x10)");
+			AddItem(Config::Items::DevilsClub, 10);
+
+			ImGui::Text("Devil's Club Seed (x10)");
+			AddItem(Config::Items::DevilsClubSeed, 10);
+
+			ImGui::Text("Fireweed (x10)");
+			AddItem(Config::Items::Fireweed, 10);
+
+			ImGui::Text("Fireweed Seed (x10)");
+			AddItem(Config::Items::FireweedSeed, 10);
+
+			ImGui::Text("Guarana Seed (x10)");
+			AddItem(Config::Items::GuaranaSeed, 10);
+
+			ImGui::Text("Horsetail (x10)");
+			AddItem(Config::Items::Horsetail, 10);
+
+			ImGui::Text("Horsetail Seed (x10)");
+			AddItem(Config::Items::HorsetailSeed, 10);
+
+			ImGui::Text("Salmon Berry Seed (x10)");
+			AddItem(Config::Items::SalmonberrySeed, 10);
+
+			ImGui::Text("Yarrow (x10)");
+			AddItem(Config::Items::Yarrow, 10);
+
+			ImGui::Text("Yarrow Seed (x10)");
+			AddItem(Config::Items::YarrowSeed, 10);
+		}
+
+		// Keycards window
+		if (Globals::Gui::window == "keycards")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("additems");
+
+			ImGui::Text("Guest KeyCard");
+			AddItem(Config::Items::GuestKeyCard, 1);
+
+			ImGui::Text("Maintenance KeyCard");
+			AddItem(Config::Items::MaintenanceKeyCard, 1);
+
+			ImGui::Text("VIP KeyCard");
+			AddItem(Config::Items::VIPKeyCard, 1);
 		}
 
 		// Modded items window
@@ -694,6 +1301,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Checkbox("Rapid Fire", &Config::Value::Pistol::RapidFire);
 			ImGui::Text("Press Q to shoot in rapid fire mode");
 		}
+
 		// Custom FalshLight window
 		if (Globals::Gui::window == "flashlight")
 		{
@@ -765,7 +1373,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			SetWindow("wind");
 
 			// DayTime Control
-			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " DayTime Control " ICON_FA_ARROW_LEFT_LONG);
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " DayTime Control (Don't use in multi) " ICON_FA_ARROW_LEFT_LONG);
 			SetWindow("daytime");
 		}
 
@@ -821,9 +1429,9 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Checkbox("Interactive Map", &Globals::Gui::showMap);
 			if (Globals::Gui::showMap)
 			{
-				style->Colors[ImGuiCol_Text] = ImColor(255, 0, 0);
+				Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 0, 0);
 				DisplayMap(map_texture);
-				style->Colors[ImGuiCol_Text] = Colors::white;
+				Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
 			}
 
 			ImGui::Text("My Base (Lake)");
@@ -939,14 +1547,24 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::InputFloat("X", &playerLoc.x, NULL, NULL, 0, ImGuiInputTextFlags_ReadOnly);
 			ImGui::InputFloat("Y", &playerLoc.y, NULL, NULL, 0, ImGuiInputTextFlags_ReadOnly);
 			ImGui::InputFloat("Z", &playerLoc.z, NULL, NULL, 0, ImGuiInputTextFlags_ReadOnly);
+
+			ImGui::Separator();
+
+			ImGui::Text("Add Items");
+			ImGui::InputInt("Item ID", &Config::Items::itemID, NULL, NULL, ImGuiInputTextFlags_EnterReturnsTrue);
+			ImGui::InputInt("Item Qty", &Config::Items::itemQTY, 1, NULL, ImGuiInputTextFlags_EnterReturnsTrue);
+			if (ImGui::SmallButton("Add Item"))
+			{
+				Globals::ItemInstanceManager->CallMethod<bool, int, int>(Globals::Methods::TryAddItems, Config::Items::itemID, Config::Items::itemQTY);
+			}
 		}
 
 		//About window
 		if (Globals::Gui::showAbout)
 		{
 			ImGui::SetCursorPos(ImVec2(5, 235));
-			style->Colors[ImGuiCol_ChildBg] = ImColor(36, 36, 36);
-			style->ChildBorderSize = 2.0f;
+			Globals::Gui::style->Colors[ImGuiCol_ChildBg] = ImColor(36, 36, 36);
+			Globals::Gui::style->ChildBorderSize = 2.0f;
 			ImGui::BeginChild("about", ImVec2(310, 80), true, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 			ImGui::SetCursorPos(ImVec2(95, 30));
 			ImGui::Text("Made by ImAxel0");

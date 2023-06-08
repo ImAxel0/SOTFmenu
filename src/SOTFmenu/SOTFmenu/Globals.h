@@ -30,8 +30,19 @@ namespace Globals
     inline Unity::CComponent* WindManager;
     inline Unity::CComponent* TimeOfDayHolder;
     inline Unity::CComponent* StructureCraftingSystem_component;
+    inline Unity::CComponent* ItemInstanceManager;
 
     inline DWORD Cheats_CheatsBridge_o{};
+
+    namespace Classes
+    {
+        inline Unity::il2cppClass* LocalPlayerClass;
+    }
+
+    namespace Methods
+    {
+        inline void* TryAddItems;
+    }
 
     namespace Stats
     {
@@ -54,6 +65,7 @@ namespace Globals
     namespace Gui
     {
         inline Present oPresent;
+        inline ImGuiStyle* style;
 
         inline bool isFullness = false;
         inline bool isHydration = false;

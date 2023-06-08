@@ -37,6 +37,8 @@ void findInMemory()
 	std::cout << "[+] Found GameAssembly at: " << std::hex << Globals::GameAssembly << '\n';
 
 	// Local Player
+	Globals::Classes::LocalPlayerClass = IL2CPP::Class::Find("TheForest.Utils.LocalPlayer");
+
 	Globals::LocalPlayer = Unity::GameObject::Find("LocalPlayer");
 	
 	if (!Globals::LocalPlayer)
@@ -48,6 +50,9 @@ void findInMemory()
 
 	SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
 	std::cout << "[+] Found LocalPlayer at: " << Globals::LocalPlayer << '\n';
+
+	Globals::ItemInstanceManager = Globals::LocalPlayer->GetComponent("ItemInstanceManager");
+	Globals::Methods::TryAddItems = Globals::ItemInstanceManager->GetMethodPointer("TryAddItems");
 
 	// FirstPersonCharacter
 	Globals::FirstPersonCharacter = Globals::LocalPlayer->GetComponent("FirstPersonCharacter");

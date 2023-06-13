@@ -15,6 +15,8 @@ namespace Config
     inline bool bGlider = false;
     inline bool bKnightV = false;
     inline bool bPistol = false;
+    inline bool bRevolver = false;
+    inline bool bShotgun = false;
     inline bool bFlashLight = false;
     inline bool bLighter = false;
     inline bool bRebreather = false;
@@ -23,9 +25,37 @@ namespace Config
     inline bool bWindControl = false;
     inline bool bDayTime = false;
     inline bool bInstantBuild = false;
+    inline bool bTreeRegrow = false;
 
     inline bool bHealthSP = false;
     inline bool bStaminaSP = false;
+
+    namespace MethodToggleCall
+    {
+        inline bool DebugAddCharacter = false;
+        inline bool DebugAddDefinedCharacter = false;
+        inline bool SetSeason = false;
+        inline bool SpawnItem = false;
+
+        namespace Value
+        {
+            namespace DebugAddCharacter
+            {
+                inline std::string character = "";
+                inline std::string entity = "";
+            }
+
+            namespace SetSeason
+            {
+                inline std::string season = "";
+            }
+
+            namespace SpawnItem
+            {
+                inline std::string itemTxt = "";
+            }
+        }
+    }
 
     namespace Value
     {
@@ -57,6 +87,25 @@ namespace Config
         {
             inline bool IsPistolEquipped = false;
             inline bool RapidFire = false;
+        }
+
+        namespace Revolver
+        {
+            inline bool IsRevolverEquipped = false;
+            inline bool RapidFire = false;
+
+            inline void* FireWeapon; // method
+        }
+
+        namespace Shotgun
+        {
+            inline bool IsShotgunEquipped = false;
+            inline bool RapidFire = false;
+
+            inline void* FireWeapon; // method
+            inline bool ShotgunRapidFireThread = false;
+            inline float FireDelay = 0.5f;
+            inline bool FreeMode = false;
         }
 
         namespace FlashLight
@@ -103,6 +152,11 @@ namespace Config
         {
             inline float _baseSpeedMultiplier = 1.0f;
         }
+
+        namespace TreeRegrow
+        {
+            inline float _regrowthFactor = 0.1f;
+        }
     }
 
     namespace Offsets
@@ -119,6 +173,8 @@ namespace Config
     {
         inline int itemID{};
         inline int itemQTY{};
+
+        inline const char* itemText{};
 
         enum ItemsID
         {
@@ -276,6 +332,17 @@ namespace Config
             Yarrow = 452,
             YarrowSeed = 606,
             ZiplineRope = 523
+        };
+    }
+
+    namespace SeasonsManager
+    {
+        enum Season
+        {
+            Spring  = 0,
+            Summer  = 1,
+            Fall    = 2,
+            Winter  = 3
         };
     }
 }

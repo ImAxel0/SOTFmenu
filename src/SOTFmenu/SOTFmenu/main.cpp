@@ -58,6 +58,8 @@ DWORD WINAPI MainThread(LPVOID lpReserved)
 				findInMemory();
 			}
 			CreateHacksHooks();
+			IL2CPP::Callback::Initialize();
+			InstantiateMethods();
 			kiero::bind(8, (void**)&Globals::Gui::oPresent, hkPresent);
 
 			SetConsoleTextAttribute(Globals::Gui::hConsole, 2);

@@ -13,11 +13,15 @@ namespace Globals
     inline Unity::CGameObject* Atmosphere;
     inline Unity::CGameObject* GameManagers;
     inline Unity::CGameObject* StructureCraftingSystem;
+    inline Unity::CGameObject* DebugConsole;
+    inline Unity::CGameObject* CharacterManager;
 
     inline Unity::CComponent* Vitals;
     inline Unity::CComponent* FirstPersonCharacter;
     inline Unity::CComponent* PlayerHangGliderAction;
     inline Unity::CComponent* CompactPistolWeaponController;
+    inline Unity::CComponent* RevolverWeaponController;
+    inline Unity::CComponent* ShotgunWeaponController;
     inline Unity::CComponent* PlayerKnightVAction;
     inline Unity::CComponent* KnightVControlDefinition;
     inline Unity::CComponent* FlashlightController;
@@ -31,6 +35,9 @@ namespace Globals
     inline Unity::CComponent* TimeOfDayHolder;
     inline Unity::CComponent* StructureCraftingSystem_component;
     inline Unity::CComponent* ItemInstanceManager;
+    inline Unity::CComponent* SeasonsManager;
+    inline Unity::CComponent* TreeRegrowChecker;
+    inline Unity::CComponent* CharacterManager_component;
 
     inline DWORD Cheats_CheatsBridge_o{};
 
@@ -42,6 +49,9 @@ namespace Globals
     namespace Methods
     {
         inline void* TryAddItems;
+        inline void* get_ActiveSeason;
+        inline void* _spawnitem;
+        inline void* DebugAddCharacter;
     }
 
     namespace Stats

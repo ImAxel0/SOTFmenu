@@ -1,8 +1,43 @@
 #include "Globals.h"
 #include "config.h"
+#include <thread>
+#include <chrono>
 #include <iostream>
 
 #define PTRCAST(t, a) reinterpret_cast<t>(a)
+
+DWORD WINAPI ShotgunRapidFire(LPVOID lpReserved)
+{
+	using namespace std::chrono;
+
+	while (true)
+	{	
+		if (Config::bShotgun)
+		{
+			if (Globals::ShotgunWeaponController)
+			{
+				if (Config::Value::Shotgun::RapidFire) {
+
+					if (!Config::Value::Shotgun::FreeMode)
+					{
+						if (GetAsyncKeyState(0x51)) // letter q
+						{
+							Globals::ShotgunWeaponController->CallMethod<void>(Config::Value::Shotgun::FireWeapon);
+							std::this_thread::sleep_for(std::chrono::duration<float>(Config::Value::Shotgun::FireDelay));
+						}
+					}
+				}
+			}
+		}
+
+		if (!Config::Value::Shotgun::ShotgunRapidFireThread)
+		{
+			ExitThread(0);
+			break;
+		}
+	}
+	return TRUE;
+}
 
 void findInMemory()
 {
@@ -226,6 +261,76 @@ void findInMemory()
 		}
 	}
 
+	// DebugConsole CGameObject
+	Globals::DebugConsole = Unity::GameObject::Find("DebugConsole");
+
+	if (!Globals::DebugConsole) {
+
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+		printf("[-] Cannot find DebugConsole GameObject\n");
+	}
+	else {
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+		std::cout << "[+] Found DebugConsole GameObject: " << Globals::DebugConsole << '\n';
+	}
+
+	Globals::Methods::_spawnitem = IL2CPP::Class::Utils::GetMethodPointer("TheForest.DebugConsole", "_spawnitem");
+
+	// CharacterManager GameObject
+	Globals::CharacterManager = Unity::GameObject::Find("GameManagers/CharacterManager");
+
+	if (!Globals::CharacterManager) {
+
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+		printf("[-] Cannot find CharacterManager GameObject\n");
+	}
+	else {
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+		std::cout << "[+] Found CharacterManager GameObject: " << Globals::CharacterManager << '\n';
+	}
+
+	Globals::CharacterManager_component = Globals::CharacterManager->GetComponent("CharacterManager");
+
+	if (Globals::CharacterManager_component != nullptr)
+	{
+		std::cout << Globals::CharacterManager_component << '\n';
+	}
+
+	Globals::Methods::DebugAddCharacter = IL2CPP::Class::Utils::GetMethodPointer("Sons.Characters.CharacterManager", "DebugAddCharacter");
+
+	if (Globals::Methods::DebugAddCharacter != nullptr)
+	{
+		std::cout << Globals::Methods::DebugAddCharacter << '\n';
+	}
+
+	// TreeRegrowChecker Component
+	Globals::TreeRegrowChecker = Globals::GameManagers->GetComponentInChildren("Sons.Gameplay.TreeRegrowChecker");
+
+	if (!Globals::TreeRegrowChecker) {
+
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+		printf("[-] Cannot find TreeRegrowChecker Component\n");
+	}
+	else {
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+		std::cout << "[+] Found TreeRegrowChecker Component: " << Globals::TreeRegrowChecker << '\n';
+	}
+
+	// SeasonsManager Component
+	Globals::SeasonsManager = Globals::Atmosphere->GetComponentInChildren("Sons.Atmosphere.SeasonsManager");
+
+	if (!Globals::SeasonsManager) {
+
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+		printf("[-] Cannot find SeasonsManager Component\n");
+	}
+	else {
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+		std::cout << "[+] Found SeasonsManager Component: " << Globals::SeasonsManager << '\n';
+	}
+
+	Globals::Methods::get_ActiveSeason = Globals::SeasonsManager->GetMethodPointer("get_ActiveSeason");
+
 	SetConsoleTextAttribute(Globals::Gui::hConsole, 9);
 	printf("Required Things Found!\n\n");
 
@@ -280,6 +385,34 @@ bool findPistol()
 	Globals::CompactPistolWeaponController = Globals::LocalPlayer->GetComponentInChildren("Sons.Weapon.CompactPistolWeaponController");
 	if (!Globals::CompactPistolWeaponController) {
 		return FALSE;
+	}
+	return TRUE;
+}
+
+bool findRevolver()
+{
+	Globals::RevolverWeaponController = Globals::LocalPlayer->GetComponentInChildren("Sons.Weapon.RevolverWeaponController");
+	if (!Globals::RevolverWeaponController) {
+		return FALSE;
+	}
+
+	if (Config::Value::Revolver::FireWeapon == nullptr)
+	{
+		Config::Value::Revolver::FireWeapon = IL2CPP::Class::Utils::GetMethodPointer("Sons.Weapon.RevolverWeaponController", "FireWeapon");
+	}
+	return TRUE;
+}
+
+bool findShotgun()
+{
+	Globals::ShotgunWeaponController = Globals::LocalPlayer->GetComponentInChildren("Sons.Weapon.ShotgunWeaponController");
+	if (!Globals::ShotgunWeaponController) {
+		return FALSE;
+	}
+
+	if (Config::Value::Shotgun::FireWeapon == nullptr)
+	{
+		Config::Value::Shotgun::FireWeapon = IL2CPP::Class::Utils::GetMethodPointer("Sons.Weapon.ShotgunWeaponController", "FireWeapon");
 	}
 	return TRUE;
 }
@@ -513,6 +646,37 @@ void setMemory()
 			Globals::CompactPistolWeaponController->SetMemberValue<float>("_fireDelay", 0.2f);
 		}
 	}
+	//Custom Revolver
+	if (Config::bRevolver)
+	{
+		if (Globals::RevolverWeaponController)
+		{
+			if (Config::Value::Revolver::RapidFire) {
+
+				if (GetAsyncKeyState(0x51)) // letter q
+				{
+					Globals::RevolverWeaponController->CallMethod<void>(Config::Value::Revolver::FireWeapon);
+				}
+			}
+		}
+	}
+	// Custom Shotgun
+	if (Config::bShotgun)
+	{
+		if (Globals::ShotgunWeaponController)
+		{
+			if (Config::Value::Shotgun::RapidFire)
+			{
+				if (Config::Value::Shotgun::FreeMode)
+				{
+					if (GetAsyncKeyState(0x51) & 1) // letter q
+					{
+						Globals::ShotgunWeaponController->CallMethod<void>(Config::Value::Shotgun::FireWeapon);
+					}
+				}
+			}
+		}
+	}
 	//Custom Flashlight
 	if (Config::bFlashLight)
 	{
@@ -644,4 +808,61 @@ void setMemory()
 			Globals::TimeOfDayHolder->SetMemberValue<float>("_baseSpeedMultiplier", 1.0f);
 		}
 	}
+	// Tree Regrow Control
+	if (Config::bTreeRegrow)
+	{
+		if (Globals::TreeRegrowChecker)
+		{
+			Globals::TreeRegrowChecker->SetMemberValue<float>("_regrowthFactor", Config::Value::TreeRegrow::_regrowthFactor);
+		}
+	}
+	else {
+		if (Globals::TreeRegrowChecker) {
+
+			Globals::TreeRegrowChecker->SetMemberValue<float>("_regrowthFactor", 0.1f);
+		}
+	}
+}
+
+// Methods calling begins here
+void DebugAddCharacter()
+{
+	if (Config::MethodToggleCall::DebugAddCharacter)
+	{
+		Globals::CharacterManager_component->CallMethod<bool>("DebugAddCharacter", IL2CPP::String::New(Config::MethodToggleCall::Value::DebugAddCharacter::entity), true);
+		Config::MethodToggleCall::DebugAddCharacter = false;
+	}
+
+	if (Config::MethodToggleCall::DebugAddDefinedCharacter)
+	{
+		Globals::CharacterManager_component->CallMethod<bool>("DebugAddCharacter", IL2CPP::String::New(Config::MethodToggleCall::Value::DebugAddCharacter::character), true);
+		Config::MethodToggleCall::DebugAddDefinedCharacter = false;
+	}
+}
+
+void SetSeason()
+{
+	if (Config::MethodToggleCall::SetSeason)
+	{
+		void* _season = IL2CPP::Class::Utils::GetMethodPointer("TheForest.DebugConsole", "_season");
+		Globals::DebugConsole->CallMethod<void>(_season, IL2CPP::String::New(Config::MethodToggleCall::Value::SetSeason::season));
+		Config::MethodToggleCall::SetSeason = false;
+	}
+}
+
+void SpawnItem()
+{
+	if (Config::MethodToggleCall::SpawnItem)
+	{
+		void* _spawnitem = IL2CPP::Class::Utils::GetMethodPointer("TheForest.DebugConsole", "_spawnitem");
+		Globals::DebugConsole->CallMethod<void>(_spawnitem, IL2CPP::String::New(Config::MethodToggleCall::Value::SpawnItem::itemTxt));
+		Config::MethodToggleCall::SpawnItem = false;
+	}
+}
+
+void InstantiateMethods()
+{
+	IL2CPP::Callback::OnUpdate::Add(DebugAddCharacter);
+	IL2CPP::Callback::OnUpdate::Add(SetSeason);
+	IL2CPP::Callback::OnUpdate::Add(SpawnItem);
 }

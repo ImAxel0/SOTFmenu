@@ -11,6 +11,7 @@
 #include "hooks.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "imgui/imgui_stdlib.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -61,6 +62,7 @@ namespace Colors
 	ImColor itemsText(255, 255, 255);
 	ImColor environmentText(255, 255, 255);
 	ImColor addItemsText(255, 255, 255);
+	ImColor spawnCharacters(255, 255, 255);
 	ImColor hoveredText(88, 127, 255);
 }
 
@@ -358,8 +360,6 @@ void AddItem(int ItemID, int ItemQTY)
 	}
 	ImGui::PopID();
 	Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
-
-	
 }
 
 bool init = false;
@@ -401,6 +401,8 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 
 	// May cause performance issues
 	Config::Value::Pistol::IsPistolEquipped = findPistol();
+	Config::Value::Revolver::IsRevolverEquipped = findRevolver();
+	Config::Value::Shotgun::IsShotgunEquipped = findShotgun();
 	Config::Value::FlashLight::IsFlashLightEquipped = findFlashLight();
 	Config::Value::Lighter::IsLighterEquipped = findLighter();
 	Config::Value::Rebreather::IsRebreatherEquipped = findRebreather();
@@ -422,7 +424,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 		Globals::Gui::style->Colors[ImGuiCol_SeparatorActive] = *Colors::color;
 		Globals::Gui::style->Colors[ImGuiCol_SeparatorHovered] = *Colors::color;
 		Globals::Gui::style->ItemSpacing = ImVec2(NULL, 8);
-		ImGui::SetNextWindowSize(ImVec2(320, 660));
+		ImGui::SetNextWindowSize(ImVec2(320, 670));
 		Globals::Gui::style->WindowBorderSize = 3.0f;
 		//Globals::Gui::style->WindowRounding = 0.0f;
 		Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::black;
@@ -452,7 +454,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 
 		// Home window
 		if (Globals::Gui::window == "home")
-		{
+		{	
 			// Health
 			ImGui::Checkbox(ICON_FA_HEART " God Mode", &Config::bHealth);
 			// Stamina
@@ -514,7 +516,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Checkbox(ICON_FA_SHUTTLE_SPACE " No Gravity", &Config::bGravity);
 			// Instant build
 			ImGui::Checkbox(ICON_FA_BUILDING " Instant Build mode (HOST only)", &Config::bInstantBuild);
-				 
+ 
 			ImGui::Separator();
 			
 			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::dynamicText1;
@@ -545,6 +547,21 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			}
 			else {
 				Colors::addItemsText = Colors::white;
+			}
+
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::spawnCharacters;
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Spawn Characters (HOST only) " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				Colors::spawnCharacters = Colors::hoveredText;
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "spawncharacters";
+				}
+			}
+			else {
+				Colors::spawnCharacters = Colors::white;
 			}
 
 			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::itemsText;
@@ -1223,6 +1240,121 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			AddItem(Config::Items::VIPKeyCard, 1);
 		}
 
+		// Spawn Characters window
+		if (Globals::Gui::window == "spawncharacters")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("home");
+
+			if (ImGui::Button("Spawn Cannibal", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "cannibal";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Red cannibal", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "fat";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Muddy male", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "muddymale";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Muddy female", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "muddyfemale";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Big Gold Mask cannibal", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "heavy";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Caterpillar", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "caterpillar";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Baby", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "baby";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Twin", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "twins";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Demon", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "demon";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Demon Boss", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "demonboss";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Finger", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "fingers";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn MissPuffy", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "misspuffy";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn MrPuffy", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "mrpuffy";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn MrPuffton", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "mrpuffton";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Shark", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "shark";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Sluggy", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "sluggy";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Kelvin", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "robby";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+
+			if (ImGui::Button("Spawn Virginia", ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::DebugAddCharacter::character = "virginia";
+				Config::MethodToggleCall::DebugAddDefinedCharacter = true;
+			}
+		}
+
 		// Modded items window
 		if (Globals::Gui::window == "items")
 		{
@@ -1237,6 +1369,12 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Pistol " ICON_FA_ARROW_LEFT_LONG);
 			SetWindow("pistol");
+
+			//ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Revolver " ICON_FA_ARROW_LEFT_LONG);
+			//SetWindow("revolver");
+
+			//ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Shotgun " ICON_FA_ARROW_LEFT_LONG);
+			//SetWindow("shotgun");
 
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom FlashLight " ICON_FA_ARROW_LEFT_LONG);
 			SetWindow("flashlight");
@@ -1299,6 +1437,58 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 
 			ImGui::Checkbox("Enable/Disable", &Config::bPistol);
 			ImGui::Checkbox("Rapid Fire", &Config::Value::Pistol::RapidFire);
+			ImGui::Text("Press Q to shoot in rapid fire mode");
+		}
+
+		// Custom Revolver window
+		if (Globals::Gui::window == "revolver")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("items");
+
+			ImGui::Checkbox("Enable/Disable", &Config::bRevolver);
+			ImGui::Checkbox("Rapid Fire (Unstable)", &Config::Value::Revolver::RapidFire);
+			ImGui::Text("Press Q to shoot in rapid fire mode");
+		}
+
+		// Custom Shotgun window
+		if (Globals::Gui::window == "shotgun")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("items");
+
+			ImGui::Checkbox("Enable/Disable", &Config::bShotgun);
+			if (ImGui::Checkbox("Rapid Fire (Unstable)", &Config::Value::Shotgun::RapidFire))
+			{
+				if (Config::Value::Shotgun::RapidFire)
+				{
+					Config::Value::Shotgun::ShotgunRapidFireThread = true;
+					CreateThread(nullptr, 0, ShotgunRapidFire, nullptr, 0, nullptr);
+				}
+				else
+				{
+					Config::Value::Shotgun::ShotgunRapidFireThread = false;
+				}
+			}
+			if (Config::Value::Shotgun::RapidFire)
+			{
+				ImGui::Checkbox("Free Mode", &Config::Value::Shotgun::FreeMode);
+
+				if (!Config::Value::Shotgun::FreeMode)
+				{
+					ImGui::InputFloat("Fire Delay", &Config::Value::Shotgun::FireDelay, 0.05f, NULL, 2);
+				}
+
+				Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::mainTheme;
+				ImGui::Text("Values under 0.5s may cause the game to crash.\nFree mode allows to spam the key but can cause\ncrash if repeatedly pressed.");
+				Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
+			}
 			ImGui::Text("Press Q to shoot in rapid fire mode");
 		}
 
@@ -1375,6 +1565,14 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			// DayTime Control
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " DayTime Control (Don't use in multi) " ICON_FA_ARROW_LEFT_LONG);
 			SetWindow("daytime");
+
+			// Season Control
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Season Control " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("season");
+
+			// Tree Regrow Control
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Tree Regrow Control (HOST only ?) " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("regrow");
 		}
 
 		if (Globals::Gui::window == "sun")
@@ -1418,6 +1616,77 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Checkbox("Enable/Disable", &Config::bDayTime);
 			ImGui::SliderFloat("DayTime Speed Multiplier", &Config::Value::DayTimeControl::_baseSpeedMultiplier, 0, 10000.0f, "%.0f");
 			ImGui::Text("0 = freeze time\nCTRL + Left click to manual input the value");
+		}
+
+		if (Globals::Gui::window == "season")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("environment");
+
+			int season = Globals::SeasonsManager->CallMethod<Config::SeasonsManager::Season>(Globals::Methods::get_ActiveSeason);
+
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::mainTheme;
+			switch (season)
+			{
+			case 0: 
+				ImGui::Text(ICON_FA_ARROW_RIGHT " Spring " ICON_FA_ARROW_LEFT);
+				break;
+			case 1:
+				ImGui::Text(ICON_FA_ARROW_RIGHT " Summer " ICON_FA_ARROW_LEFT);
+				break;
+			case 2:
+				ImGui::Text(ICON_FA_ARROW_RIGHT " Fall " ICON_FA_ARROW_LEFT);
+				break;
+			case 3:
+				ImGui::Text(ICON_FA_ARROW_RIGHT " Winter " ICON_FA_ARROW_LEFT);
+				break;
+			}
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
+
+			if (ImGui::Button("Spring " ICON_FA_SUN_PLANT_WILT, ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::SetSeason::season = "spring";
+				Config::MethodToggleCall::SetSeason = true;
+			}
+
+			if (ImGui::Button("Summer " ICON_FA_SUN, ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::SetSeason::season = "summer";
+				Config::MethodToggleCall::SetSeason = true;
+			}
+
+			if (ImGui::Button("Fall " ICON_FA_LEAF, ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::SetSeason::season = "fall";
+				Config::MethodToggleCall::SetSeason = true;
+			}
+
+			if (ImGui::Button("Winter " ICON_FA_SNOWFLAKE, ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+			{
+				Config::MethodToggleCall::Value::SetSeason::season = "winter";
+				Config::MethodToggleCall::SetSeason = true;
+			}
+		}
+
+		if (Globals::Gui::window == "regrow")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("environment");
+
+			ImGui::Checkbox("Enable/Disable", &Config::bTreeRegrow);
+			ImGui::Text("Tree Regrow Rate");
+			ImGui::InputFloat("##", &Config::Value::TreeRegrow::_regrowthFactor, 0.1f, NULL, 1);
+			if (ImGui::SmallButton("Default"))
+			{
+				Config::Value::TreeRegrow::_regrowthFactor = 0.1f;
+			}
+			ImGui::Text("1 seems like 100%% trees will regrow after sleeping");
 		}
 
 		// Teleport window
@@ -1557,6 +1826,27 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			{
 				Globals::ItemInstanceManager->CallMethod<bool, int, int>(Globals::Methods::TryAddItems, Config::Items::itemID, Config::Items::itemQTY);
 			}
+
+			ImGui::Separator();
+
+			ImGui::Text("Spawn Characters");
+			ImGui::InputText("Chr Name", &Config::MethodToggleCall::Value::DebugAddCharacter::entity);
+
+			if (ImGui::SmallButton("Spawn character"))
+			{
+				Config::MethodToggleCall::DebugAddCharacter = true;
+			}
+			/*
+			ImGui::Separator();
+
+			ImGui::Text("Spawn Items");
+			ImGui::InputText("Item Name", &Config::MethodToggleCall::Value::SpawnItem::itemTxt);
+
+			if (ImGui::SmallButton("Spawn item"))
+			{
+				Config::MethodToggleCall::SpawnItem = true;
+			}
+			*/
 		}
 
 		//About window

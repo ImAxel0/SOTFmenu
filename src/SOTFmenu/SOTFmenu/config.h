@@ -161,12 +161,12 @@ namespace Config
 
     namespace Offsets
     {
-        inline uintptr_t ApplyDamage = 0x33070C0;
-        inline uintptr_t AdjustStamina = 0x3307440;
-        inline uintptr_t RemoveAmmo = 0x35A8CC0;
-        inline uintptr_t GrabCheats_CheatsBridge_o = 0x59B160;
-        inline uintptr_t GodMode = 0x36735C0;
-        inline uintptr_t InfiniteStamina = 0x3673620;
+        inline uintptr_t ApplyDamage = 0x336C890;
+        inline uintptr_t AdjustStamina = 0x336CC10;
+        inline uintptr_t RemoveAmmo = 0x362B3F0;
+        inline uintptr_t GrabCheats_CheatsBridge_o = 0x59F160;
+        inline uintptr_t GodMode = 0x37070D0;
+        inline uintptr_t InfiniteStamina = 0x3707130;
     }
 
     namespace Items
@@ -344,5 +344,12 @@ namespace Config
             Fall    = 2,
             Winter  = 3
         };
+    }
+
+    namespace Lobby
+    {
+        inline bool gotLobbyInfo = false;
+
+        inline int PlayerLimit{20};
     }
 }

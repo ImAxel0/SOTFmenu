@@ -13,3 +13,4 @@ inline bool findRebreather();
 inline bool findRopeGun();
 
 inline void InstantiateMethods();
+inline void GetLobbyInfo();

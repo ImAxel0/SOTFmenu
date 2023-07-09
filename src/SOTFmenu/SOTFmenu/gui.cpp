@@ -63,6 +63,7 @@ namespace Colors
 	ImColor environmentText(255, 255, 255);
 	ImColor addItemsText(255, 255, 255);
 	ImColor spawnCharacters(255, 255, 255);
+	ImColor multiplayerText(255, 255, 255);
 	ImColor hoveredText(88, 127, 255);
 }
 
@@ -378,6 +379,9 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			pDevice->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView);
 			pBackBuffer->Release();
 			oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProc);
+
+			IL2CPP::Thread::Attach(IL2CPP::Domain::Get());
+
 			InitImGui();
 			init = true;
 		}
@@ -533,7 +537,22 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			else {
 				Colors::dynamicText1 = Colors::white;
 			}
-
+			
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::multiplayerText;
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Multi Player Only " ICON_FA_ARROW_LEFT_LONG);
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				Colors::multiplayerText = Colors::hoveredText;
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					Globals::Gui::window = "multiplayer";
+				}
+			}
+			else {
+				Colors::multiplayerText = Colors::white;
+			}
+			
 			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::addItemsText;
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Add Item to Inventory " ICON_FA_ARROW_LEFT_LONG);
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
@@ -664,6 +683,38 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			if (ImGui::Checkbox(ICON_FA_HAND_FIST " Infinite Stamina SP", &Config::bStaminaSP))
 			{
 				InfiniteStamina();
+			}
+		}
+
+		// Mutli-Player window
+		if (Globals::Gui::window == "multiplayer")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Lobby Settings (HOST only) " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("lobby");
+		}
+
+		//Lobby Settings window
+		if (Globals::Gui::window == "lobby")
+		{
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Home");
+			SetWindow("home");
+
+			ImGui::Text(ICON_FA_ARROW_LEFT_LONG " Go Back");
+			SetWindow("multiplayer");
+
+			if (!Config::Lobby::gotLobbyInfo) {
+				GetLobbyInfo();
+				Config::Lobby::gotLobbyInfo = true;
+			}
+
+			ImGui::InputInt("Player Limit", &Config::Lobby::PlayerLimit, 1, NULL);
+
+			if (ImGui::SmallButton("Set"))
+			{
+				Globals::CoopLobby->CallMethod<void>("SetMemberLimit", Config::Lobby::PlayerLimit);
 			}
 		}
 
@@ -1370,11 +1421,11 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Pistol " ICON_FA_ARROW_LEFT_LONG);
 			SetWindow("pistol");
 
-			//ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Revolver " ICON_FA_ARROW_LEFT_LONG);
-			//SetWindow("revolver");
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Revolver " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("revolver");
 
-			//ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Shotgun " ICON_FA_ARROW_LEFT_LONG);
-			//SetWindow("shotgun");
+			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom Shotgun " ICON_FA_ARROW_LEFT_LONG);
+			SetWindow("shotgun");
 
 			ImGui::Text(ICON_FA_ARROW_RIGHT_LONG " Custom FlashLight " ICON_FA_ARROW_LEFT_LONG);
 			SetWindow("flashlight");
@@ -1451,7 +1502,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 
 			ImGui::Checkbox("Enable/Disable", &Config::bRevolver);
 			ImGui::Checkbox("Rapid Fire (Unstable)", &Config::Value::Revolver::RapidFire);
-			ImGui::Text("Press Q to shoot in rapid fire mode");
+			ImGui::Text("Keep pressed Q to shoot in rapid fire mode");
 		}
 
 		// Custom Shotgun window
@@ -1464,32 +1515,8 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			SetWindow("items");
 
 			ImGui::Checkbox("Enable/Disable", &Config::bShotgun);
-			if (ImGui::Checkbox("Rapid Fire (Unstable)", &Config::Value::Shotgun::RapidFire))
-			{
-				if (Config::Value::Shotgun::RapidFire)
-				{
-					Config::Value::Shotgun::ShotgunRapidFireThread = true;
-					CreateThread(nullptr, 0, ShotgunRapidFire, nullptr, 0, nullptr);
-				}
-				else
-				{
-					Config::Value::Shotgun::ShotgunRapidFireThread = false;
-				}
-			}
-			if (Config::Value::Shotgun::RapidFire)
-			{
-				ImGui::Checkbox("Free Mode", &Config::Value::Shotgun::FreeMode);
-
-				if (!Config::Value::Shotgun::FreeMode)
-				{
-					ImGui::InputFloat("Fire Delay", &Config::Value::Shotgun::FireDelay, 0.05f, NULL, 2);
-				}
-
-				Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::mainTheme;
-				ImGui::Text("Values under 0.5s may cause the game to crash.\nFree mode allows to spam the key but can cause\ncrash if repeatedly pressed.");
-				Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
-			}
-			ImGui::Text("Press Q to shoot in rapid fire mode");
+			ImGui::Checkbox("Rapid Fire", &Config::Value::Shotgun::RapidFire);
+			ImGui::Text("Keep pressed Q to shoot in rapid fire mode");
 		}
 
 		// Custom FalshLight window

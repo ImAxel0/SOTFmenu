@@ -6,39 +6,6 @@
 
 #define PTRCAST(t, a) reinterpret_cast<t>(a)
 
-DWORD WINAPI ShotgunRapidFire(LPVOID lpReserved)
-{
-	using namespace std::chrono;
-
-	while (true)
-	{	
-		if (Config::bShotgun)
-		{
-			if (Globals::ShotgunWeaponController)
-			{
-				if (Config::Value::Shotgun::RapidFire) {
-
-					if (!Config::Value::Shotgun::FreeMode)
-					{
-						if (GetAsyncKeyState(0x51)) // letter q
-						{
-							Globals::ShotgunWeaponController->CallMethod<void>(Config::Value::Shotgun::FireWeapon);
-							std::this_thread::sleep_for(std::chrono::duration<float>(Config::Value::Shotgun::FireDelay));
-						}
-					}
-				}
-			}
-		}
-
-		if (!Config::Value::Shotgun::ShotgunRapidFireThread)
-		{
-			ExitThread(0);
-			break;
-		}
-	}
-	return TRUE;
-}
-
 void findInMemory()
 {
 	SetConsoleTextAttribute(Globals::Gui::hConsole, 15);
@@ -291,17 +258,7 @@ void findInMemory()
 
 	Globals::CharacterManager_component = Globals::CharacterManager->GetComponent("CharacterManager");
 
-	if (Globals::CharacterManager_component != nullptr)
-	{
-		std::cout << Globals::CharacterManager_component << '\n';
-	}
-
 	Globals::Methods::DebugAddCharacter = IL2CPP::Class::Utils::GetMethodPointer("Sons.Characters.CharacterManager", "DebugAddCharacter");
-
-	if (Globals::Methods::DebugAddCharacter != nullptr)
-	{
-		std::cout << Globals::Methods::DebugAddCharacter << '\n';
-	}
 
 	// TreeRegrowChecker Component
 	Globals::TreeRegrowChecker = Globals::GameManagers->GetComponentInChildren("Sons.Gameplay.TreeRegrowChecker");
@@ -646,37 +603,6 @@ void setMemory()
 			Globals::CompactPistolWeaponController->SetMemberValue<float>("_fireDelay", 0.2f);
 		}
 	}
-	//Custom Revolver
-	if (Config::bRevolver)
-	{
-		if (Globals::RevolverWeaponController)
-		{
-			if (Config::Value::Revolver::RapidFire) {
-
-				if (GetAsyncKeyState(0x51)) // letter q
-				{
-					Globals::RevolverWeaponController->CallMethod<void>(Config::Value::Revolver::FireWeapon);
-				}
-			}
-		}
-	}
-	// Custom Shotgun
-	if (Config::bShotgun)
-	{
-		if (Globals::ShotgunWeaponController)
-		{
-			if (Config::Value::Shotgun::RapidFire)
-			{
-				if (Config::Value::Shotgun::FreeMode)
-				{
-					if (GetAsyncKeyState(0x51) & 1) // letter q
-					{
-						Globals::ShotgunWeaponController->CallMethod<void>(Config::Value::Shotgun::FireWeapon);
-					}
-				}
-			}
-		}
-	}
 	//Custom Flashlight
 	if (Config::bFlashLight)
 	{
@@ -860,9 +786,69 @@ void SpawnItem()
 	}
 }
 
+// Custom Shotgun
+void ShotgunFire()
+{
+	if (Config::bShotgun)
+	{
+		if (Globals::ShotgunWeaponController)
+		{
+			if (Config::Value::Shotgun::RapidFire)
+			{
+				if (GetAsyncKeyState(0x51) & 1) // letter q
+				{
+					Globals::ShotgunWeaponController->CallMethod<void>(Config::Value::Shotgun::FireWeapon);
+				}
+			}
+		}
+	}
+}
+
+// Custom Revolver
+void RevolverFire()
+{
+	if (Config::bRevolver)
+	{
+		if (Globals::RevolverWeaponController)
+		{
+			if (Config::Value::Revolver::RapidFire) {
+
+				if (GetAsyncKeyState(0x51) & 1) // letter q
+				{
+					Globals::RevolverWeaponController->CallMethod<void>(Config::Value::Revolver::FireWeapon);
+				}
+			}
+		}
+	}
+}
+
 void InstantiateMethods()
 {
 	IL2CPP::Callback::OnUpdate::Add(DebugAddCharacter);
 	IL2CPP::Callback::OnUpdate::Add(SetSeason);
 	IL2CPP::Callback::OnUpdate::Add(SpawnItem);
+	IL2CPP::Callback::OnUpdate::Add(ShotgunFire);
+	IL2CPP::Callback::OnUpdate::Add(RevolverFire);
+}
+
+void GetLobbyInfo()
+{
+	Globals::CoopLobbyManager = reinterpret_cast<Unity::CObject*>(IL2CPP::Class::Find("Sons.Multiplayer.CoopLobbyManager"));
+
+	if (Globals::CoopLobbyManager)
+	{
+		SetConsoleTextAttribute(Globals::Gui::hConsole, 2);
+		std::cout << "[+] CoopLobbyManager object found: " << Globals::CoopLobbyManager << '\n';
+
+		void* GetActiveInstance = IL2CPP::Class::Utils::GetMethodPointer("Sons.Multiplayer.CoopLobbyManager", "GetActiveInstance");
+		Globals::CoopLobby = Globals::CoopLobbyManager->CallMethod<Unity::CObject*>(GetActiveInstance);
+
+		if (Globals::CoopLobby)
+		{
+			std::cout << "[+] CoopLobby object found: " << Globals::CoopLobby << '\n';
+			return;
+		}
+	}
+	SetConsoleTextAttribute(Globals::Gui::hConsole, 4);
+	printf("Couldn't find lobby info");
 }

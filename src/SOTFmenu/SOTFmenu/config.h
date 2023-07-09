@@ -103,9 +103,6 @@ namespace Config
             inline bool RapidFire = false;
 
             inline void* FireWeapon; // method
-            inline bool ShotgunRapidFireThread = false;
-            inline float FireDelay = 0.5f;
-            inline bool FreeMode = false;
         }
 
         namespace FlashLight
@@ -161,12 +158,12 @@ namespace Config
 
     namespace Offsets
     {
-        inline uintptr_t ApplyDamage = 0x336C890;
-        inline uintptr_t AdjustStamina = 0x336CC10;
-        inline uintptr_t RemoveAmmo = 0x362B3F0;
+        inline uintptr_t ApplyDamage = 0x336CD70;
+        inline uintptr_t AdjustStamina = 0x336D0F0;
+        inline uintptr_t RemoveAmmo = 0x362BBC0;
         inline uintptr_t GrabCheats_CheatsBridge_o = 0x59F160;
-        inline uintptr_t GodMode = 0x37070D0;
-        inline uintptr_t InfiniteStamina = 0x3707130;
+        inline uintptr_t GodMode = 0x37078A0;
+        inline uintptr_t InfiniteStamina = 0x3707900;
     }
 
     namespace Items
@@ -349,7 +346,6 @@ namespace Config
     namespace Lobby
     {
         inline bool gotLobbyInfo = false;
-
         inline int PlayerLimit{20};
     }
 }

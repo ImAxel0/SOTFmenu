@@ -39,6 +39,9 @@ namespace Globals
     inline Unity::CComponent* TreeRegrowChecker;
     inline Unity::CComponent* CharacterManager_component;
 
+    inline Unity::CObject* CoopLobbyManager;
+    inline Unity::CObject* CoopLobby;
+
     inline DWORD Cheats_CheatsBridge_o{};
 
     namespace Classes

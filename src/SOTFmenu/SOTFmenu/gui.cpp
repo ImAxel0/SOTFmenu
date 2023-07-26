@@ -901,6 +901,9 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			ImGui::Text("Revolver");
 			AddItem(Config::Items::Revolver, 1);
 
+			ImGui::Text("Rifle");
+			AddItem(Config::Items::Rifle, 1);
+
 			ImGui::Text("Shotgun");
 			AddItem(Config::Items::Shotgun, 1);
 

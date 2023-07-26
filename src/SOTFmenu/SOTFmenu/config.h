@@ -158,12 +158,12 @@ namespace Config
 
     namespace Offsets
     {
-        inline uintptr_t ApplyDamage = 0x338FB80;
-        inline uintptr_t AdjustStamina = 0x338FF00;
-        inline uintptr_t RemoveAmmo = 0x365E5B0;
+        inline uintptr_t ApplyDamage = 0x338FB70;
+        inline uintptr_t AdjustStamina = 0x338FEF0;
+        inline uintptr_t RemoveAmmo = 0x365E7A0;
         inline uintptr_t GrabCheats_CheatsBridge_o = 0x59F160;
-        inline uintptr_t GodMode = 0x373C8B0;
-        inline uintptr_t InfiniteStamina = 0x373C910;
+        inline uintptr_t GodMode = 0x373CAA0;
+        inline uintptr_t InfiniteStamina = 0x373CB00;
     }
 
     namespace Items
@@ -290,6 +290,7 @@ namespace Config
             RedMask = 391,
             RepairTool = 422,
             Revolver = 386,
+            Rifle = 361,
             Rock = 393,
             Rope = 403,
             RopeGun = 522,

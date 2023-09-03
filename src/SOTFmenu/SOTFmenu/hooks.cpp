@@ -124,6 +124,8 @@ void CreateHacksHooks()
 	}
 }
 
+// Disabled since they seem to have removed Cheats_CheatsBridge_o value
+/*
 void CreateSinglePlayerHacksHooks()
 {
 	if (MH_CreateHook(reinterpret_cast<LPVOID*>(Globals::GameAssembly + Config::Offsets::GrabCheats_CheatsBridge_o), &Cheats_Hook, reinterpret_cast<LPVOID*>(&Cheats_o)) != MH_OK) {
@@ -144,7 +146,9 @@ void CreateSinglePlayerHacksHooks()
 	}
 }
 
-// From here in game functions calling begins
+*/
+
+/* From here in game functions calling begins
 typedef void* (__cdecl* _Cheats_CheatsBridge__SetGodMode)(DWORD* __this, bool onoff, DWORD* method);
 _Cheats_CheatsBridge__SetGodMode Cheats_CheatsBridge__SetGodMode;
 
@@ -176,3 +180,4 @@ void InfiniteStamina()
 		Cheats_CheatsBridge__SetInfiniteEnergy(&Globals::Cheats_CheatsBridge_o, false, nullptr);
 	}
 }
+*/

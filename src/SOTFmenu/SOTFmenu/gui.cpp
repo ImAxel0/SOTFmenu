@@ -661,7 +661,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 			Globals::Gui::style->Colors[ImGuiCol_Text] = Colors::white;
 		}
 
-		// Single Player window
+		/* Single Player window
 		if (Globals::Gui::window == "single")
 		{
 			// Create SinglePlayer Hooks
@@ -685,6 +685,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 				InfiniteStamina();
 			}
 		}
+		*/
 
 		// Mutli-Player window
 		if (Globals::Gui::window == "multiplayer")

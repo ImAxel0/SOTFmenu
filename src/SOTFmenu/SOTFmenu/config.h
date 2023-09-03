@@ -158,12 +158,12 @@ namespace Config
 
     namespace Offsets
     {
-        inline uintptr_t ApplyDamage = 0x338FB70;
-        inline uintptr_t AdjustStamina = 0x338FEF0;
-        inline uintptr_t RemoveAmmo = 0x365E7A0;
-        inline uintptr_t GrabCheats_CheatsBridge_o = 0x59F160;
-        inline uintptr_t GodMode = 0x373CAA0;
-        inline uintptr_t InfiniteStamina = 0x373CB00;
+        inline uintptr_t ApplyDamage = 0x33EDC30;
+        inline uintptr_t AdjustStamina = 0x33EDFF0;
+        inline uintptr_t RemoveAmmo = 0x36D6A40;
+        //inline uintptr_t GrabCheats_CheatsBridge_o = 0x59F160;
+        //inline uintptr_t GodMode = 0x373CDB0;
+        //inline uintptr_t InfiniteStamina = 0x373CE10;
     }
 
     namespace Items

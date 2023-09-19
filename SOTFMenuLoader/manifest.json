@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ToniMacaroni/RedLoader/main/MetadataSchema.json",
+  "id": "SOTFMenuLoader",
+  "author": "Im-_-Axel",
+  "version": "1.0.0",
+  "description": "Loader for the SOTFmenu mod",
+  "gameVersion": "1.0.0",
+  "url": "..."
+}
